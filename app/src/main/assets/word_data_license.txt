@@ -1,0 +1,52 @@
+WORD DATA LICENSE AND ATTRIBUTION
+
+NGSL 1.2 and NAWL 1.2
+Authors: Charles Browne, Brent Culligan, Joseph Phillips
+Sources:
+https://www.newgeneralservicelist.com/new-general-service-list
+https://www.newgeneralservicelist.com/new-academic-word-list
+https://www.linguaeruditio.com/Glossary/NGSL/JP/NGSL_jp_gloss.html
+License: Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+Retrieved for this project: 2026-08-30
+
+Changes made in this app:
+- converted the source lists to JSON;
+- combined NGSL and NAWL while retaining source identifiers and ranks;
+- added Japanese dictionary entries and imported short quiz meanings and parts of speech;
+- manually corrected clear source errors and disambiguated colliding quiz prompts;
+- assigned app-specific school-grade, Eiken-grade, and game-level categories.
+
+The adapted words.json dataset is offered under CC BY-SA 4.0.
+This notice applies to the adapted word dataset, not unrelated application code.
+No endorsement by the original authors or licensors is implied.
+
+EJDict-hand
+Maintainer: kujirahand
+Source: https://github.com/kujirahand/EJDict
+Revision used for the NAWL import: 5e1a630bfabb2791a78d14e4e356d85bb6437e34
+License: CC0 1.0 Universal / Public Domain
+https://creativecommons.org/publicdomain/zero/1.0/
+
+EJDict-hand was used for long-form Japanese dictionary entries.
+The underlying EJDict-hand entries remain available under CC0.
+No endorsement by its maintainer is implied.
+
+CEFR-BASED EIKEN-EQUIVALENT CLASSIFICATION
+
+CEFR-J Vocabulary Profile 1.5
+Compiler: Yukio Tono Laboratory, Tokyo University of Foreign Studies
+Source: https://github.com/openlanguageprofiles/olp-en-cefrj
+Terms: Research and commercial use permitted with proper citation
+
+Octanove Vocabulary Profile C1/C2 1.0
+Source: https://github.com/openlanguageprofiles/olp-en-cefrj
+License: Creative Commons Attribution-ShareAlike 4.0 International
+
+WortUniversum English Vocabulary Database
+Source: https://huggingface.co/datasets/cstr/grundwortschatz-voc-en
+License: Creative Commons Attribution-ShareAlike 4.0 International
+
+The app's Eiken-equivalent bands are estimates created by this project. They
+are not an official Eiken vocabulary list and do not imply endorsement by the
+Eiken Foundation of Japan or any source-data author.

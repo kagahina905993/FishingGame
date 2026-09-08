@@ -1,0 +1,280 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "da206bd082434af87c58a62911a92c72",
+    "entities": [
+      {
+        "tableName": "learning_attempts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`attemptId` TEXT NOT NULL, `learningItemId` TEXT NOT NULL, `wordId` TEXT NOT NULL, `direction` TEXT NOT NULL, `questionFormat` TEXT NOT NULL, `outcome` TEXT NOT NULL, `occurredAtEpochMillis` INTEGER NOT NULL, `responseTimeMillis` INTEGER, `usedHint` INTEGER NOT NULL, `gameMode` TEXT NOT NULL, `courseId` TEXT, `reviewPurpose` TEXT NOT NULL, `completionOutcome` TEXT, `completedAtEpochMillis` INTEGER, `submissionCount` INTEGER NOT NULL, `algorithmVersion` INTEGER NOT NULL, PRIMARY KEY(`attemptId`))",
+        "fields": [
+          {
+            "fieldPath": "attemptId",
+            "columnName": "attemptId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningItemId",
+            "columnName": "learningItemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "wordId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "questionFormat",
+            "columnName": "questionFormat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outcome",
+            "columnName": "outcome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurredAtEpochMillis",
+            "columnName": "occurredAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "responseTimeMillis",
+            "columnName": "responseTimeMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "usedHint",
+            "columnName": "usedHint",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gameMode",
+            "columnName": "gameMode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "courseId",
+            "columnName": "courseId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "reviewPurpose",
+            "columnName": "reviewPurpose",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completionOutcome",
+            "columnName": "completionOutcome",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "completedAtEpochMillis",
+            "columnName": "completedAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "submissionCount",
+            "columnName": "submissionCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "algorithmVersion",
+            "columnName": "algorithmVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "attemptId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_learning_attempts_learningItemId_occurredAtEpochMillis",
+            "unique": false,
+            "columnNames": [
+              "learningItemId",
+              "occurredAtEpochMillis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_learning_attempts_learningItemId_occurredAtEpochMillis` ON `${TABLE_NAME}` (`learningItemId`, `occurredAtEpochMillis`)"
+          },
+          {
+            "name": "index_learning_attempts_wordId",
+            "unique": false,
+            "columnNames": [
+              "wordId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_learning_attempts_wordId` ON `${TABLE_NAME}` (`wordId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "learning_states",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`learningItemId` TEXT NOT NULL, `wordId` TEXT NOT NULL, `direction` TEXT NOT NULL, `status` TEXT NOT NULL, `stage` TEXT NOT NULL, `independentRecallCount` INTEGER NOT NULL, `assistedRecallCount` INTEGER NOT NULL, `failedRecallCount` INTEGER NOT NULL, `lastAnsweredAtEpochMillis` INTEGER, `lastCorrectAtEpochMillis` INTEGER, `lastIndependentRecallAtEpochMillis` INTEGER, `lastFormalSuccessAtEpochMillis` INTEGER, `lastFailedAtEpochMillis` INTEGER, `intervalAnchorAtEpochMillis` INTEGER, `nextFormalReviewAtEpochMillis` INTEGER, `needsShortTermReview` INTEGER NOT NULL, `recentOutcomeCodes` TEXT NOT NULL, `algorithmVersion` INTEGER NOT NULL, PRIMARY KEY(`learningItemId`))",
+        "fields": [
+          {
+            "fieldPath": "learningItemId",
+            "columnName": "learningItemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordId",
+            "columnName": "wordId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stage",
+            "columnName": "stage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "independentRecallCount",
+            "columnName": "independentRecallCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "assistedRecallCount",
+            "columnName": "assistedRecallCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "failedRecallCount",
+            "columnName": "failedRecallCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastAnsweredAtEpochMillis",
+            "columnName": "lastAnsweredAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastCorrectAtEpochMillis",
+            "columnName": "lastCorrectAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastIndependentRecallAtEpochMillis",
+            "columnName": "lastIndependentRecallAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastFormalSuccessAtEpochMillis",
+            "columnName": "lastFormalSuccessAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastFailedAtEpochMillis",
+            "columnName": "lastFailedAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "intervalAnchorAtEpochMillis",
+            "columnName": "intervalAnchorAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "nextFormalReviewAtEpochMillis",
+            "columnName": "nextFormalReviewAtEpochMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "needsShortTermReview",
+            "columnName": "needsShortTermReview",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recentOutcomeCodes",
+            "columnName": "recentOutcomeCodes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "algorithmVersion",
+            "columnName": "algorithmVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "learningItemId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_learning_states_wordId",
+            "unique": false,
+            "columnNames": [
+              "wordId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_learning_states_wordId` ON `${TABLE_NAME}` (`wordId`)"
+          },
+          {
+            "name": "index_learning_states_needsShortTermReview",
+            "unique": false,
+            "columnNames": [
+              "needsShortTermReview"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_learning_states_needsShortTermReview` ON `${TABLE_NAME}` (`needsShortTermReview`)"
+          },
+          {
+            "name": "index_learning_states_nextFormalReviewAtEpochMillis",
+            "unique": false,
+            "columnNames": [
+              "nextFormalReviewAtEpochMillis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_learning_states_nextFormalReviewAtEpochMillis` ON `${TABLE_NAME}` (`nextFormalReviewAtEpochMillis`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da206bd082434af87c58a62911a92c72')"
+    ]
+  }
+}

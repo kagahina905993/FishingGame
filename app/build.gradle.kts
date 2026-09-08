@@ -1,6 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
@@ -34,7 +40,37 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+}
+
+val auditWords by tasks.registering(Exec::class) {
+    workingDir(rootProject.projectDir)
+    commandLine(
+        "python3",
+        "tools/audit_words.py",
+        "app/src/main/assets/words.json"
+    )
+    inputs.file("src/main/assets/words.json")
+    inputs.file(rootProject.file("tools/audit_words.py"))
+}
+
+val auditQuestions by tasks.registering(Exec::class) {
+    workingDir(rootProject.projectDir)
+    commandLine(
+        "python3",
+        "tools/audit_questions.py",
+        "app/src/main/assets/words.json",
+        "app/src/main/assets/question_content.json"
+    )
+    inputs.file("src/main/assets/words.json")
+    inputs.file("src/main/assets/question_content.json")
+    inputs.file(rootProject.file("tools/audit_questions.py"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(auditWords)
+    dependsOn(auditQuestions)
 }
 
 dependencies {
@@ -46,6 +82,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
