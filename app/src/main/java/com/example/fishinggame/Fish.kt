@@ -136,6 +136,30 @@ val fishes = listOf(
     ),
 
     Fish(
+        name = "鯉",
+        minHp = 75,
+        maxHp = 95,
+        minDistance = 6.0f,
+        maxDistance = 10.0f,
+        rarity = FishRarity.UNCOMMON,
+        minSizeCm = 20f,
+        maxSizeCm = 70f,
+        description = "川の深みを泳ぐ力強い魚。小型魚より手応えがある。"
+    ),
+
+    Fish(
+        name = "錦鯉",
+        minHp = 110,
+        maxHp = 140,
+        minDistance = 8.0f,
+        maxDistance = 14.0f,
+        rarity = FishRarity.RARE,
+        minSizeCm = 20f,
+        maxSizeCm = 70f,
+        description = "白と赤の模様が目を引く珍しい鯉。強い引きを見せる。"
+    ),
+
+    Fish(
         name = "アジ",
         minHp = 50,
         maxHp = 65,

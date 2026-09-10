@@ -155,7 +155,11 @@ private fun FishCollectionCard(
                     )
                     Text(
                         text = if (isCaught) {
-                            fish.rarity.displayText
+                            if (isFishingAreaLord(fish.name)) {
+                                "主・${fish.rarity.displayText}"
+                            } else {
+                                fish.rarity.displayText
+                            }
                         } else {
                             "未発見"
                         },

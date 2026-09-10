@@ -62,6 +62,36 @@ class QuestionContentTest {
     }
 
     @Test
+    fun validateSentenceQuestions_acceptsEasierDistractors() {
+        val leveledWords = words.mapIndexed { index, word ->
+            word.copy(level = if (index == 0) 2 else 1)
+        }
+
+        assertEquals(
+            listOf(question),
+            validateSentenceQuestions(listOf(question), leveledWords)
+        )
+    }
+
+    @Test
+    fun validateSentenceQuestions_rejectsMixedDistractorPartsOfSpeech() {
+        val mixedWords = words.mapIndexed { index, word ->
+            if (index == words.lastIndex) {
+                word.copy(
+                    partOfSpeech = "名詞",
+                    quizPartOfSpeech = "名詞"
+                )
+            } else {
+                word
+            }
+        }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            validateSentenceQuestions(listOf(question), mixedWords)
+        }
+    }
+
+    @Test
     fun multipleChoiceOptions_containOneAnswerAndThreeDistractors() {
         val options = buildMultipleChoiceOptions(
             question = question,

@@ -58,14 +58,38 @@ fun validateSentenceQuestions(
         require(question.sentence.windowed(3).count { it == "___" } == 1) {
             "英文の空欄は1つにしてください: ${question.questionId}"
         }
+        val trimmedSentence = question.sentence.trimStart()
+        require(
+            trimmedSentence.startsWith("___") ||
+                trimmedSentence.firstOrNull()?.isUpperCase() == true
+        ) {
+            "英文は文頭を大文字にしてください: ${question.questionId}"
+        }
+        require(question.sentence.lastOrNull() in setOf('.', '?', '!')) {
+            "英文の末尾に句読点が必要です: ${question.questionId}"
+        }
         require(question.answer == word.english) {
             "文章問題の答えが見出し語と一致しません: ${question.questionId}"
+        }
+        require(
+            !Regex(
+                pattern = "\\b${Regex.escape(question.answer)}\\b",
+                option = RegexOption.IGNORE_CASE
+            ).containsMatchIn(question.sentence)
+        ) {
+            "英文中に正解が表示されています: ${question.questionId}"
         }
         require(question.japaneseSentence.isNotBlank()) {
             "文章問題の和文がありません: ${question.questionId}"
         }
+        require(question.japaneseSentence.lastOrNull() in setOf('。', '？', '！')) {
+            "文章問題の和文末尾に句読点が必要です: ${question.questionId}"
+        }
         require(question.explanation.isNotBlank()) {
             "文章問題の解説がありません: ${question.questionId}"
+        }
+        require(question.explanation.lastOrNull() in setOf('。', '？', '！')) {
+            "文章問題の解説末尾に句読点が必要です: ${question.questionId}"
         }
         require(question.distractorWordIds.size == 3) {
             "文章4択の誤答は3つ必要です: ${question.questionId}"
@@ -80,10 +104,23 @@ fun validateSentenceQuestions(
             "文章4択が存在しない誤答単語を参照しています: " +
                 question.questionId
         }
+        val distractorWords = question.distractorWordIds.mapNotNull(wordsById::get)
+        require(
+            distractorWords.map { it.questionPartOfSpeech }.distinct().size == 1
+        ) {
+            "文章4択の誤答候補で品詞が混在しています: ${question.questionId}"
+        }
+        require(
+            (listOf(question.answer) + distractorWords.map { it.english.lowercase() })
+                .distinct()
+                .size == 4
+        ) {
+            "文章4択に同じ表示の選択肢があります: ${question.questionId}"
+        }
         require(question.distractorWordIds.all {
-            wordsById[it]?.level == word.level
+            (wordsById[it]?.level ?: Int.MAX_VALUE) <= word.level
         }) {
-            "文章4択の誤答は正解と同じゲームレベルにしてください: " +
+            "文章4択の誤答は正解以下のゲームレベルにしてください: " +
                 question.questionId
         }
         require(question.source.isNotBlank() && question.license.isNotBlank()) {

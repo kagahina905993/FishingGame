@@ -25,6 +25,17 @@ def main() -> None:
     }
     errors: list[str] = []
 
+    def part_of_speech(word: dict) -> str:
+        return word.get("quizPartOfSpeech") or word.get("partOfSpeech") or ""
+
+    def starts_with_vowel_sound(english: str) -> bool:
+        lowered = english.lower()
+        if lowered.startswith(("honest", "honor", "hour", "heir")):
+            return True
+        if lowered.startswith(("uni", "use", "user", "usual", "one", "once")):
+            return False
+        return lowered.startswith(tuple("aeiou"))
+
     def duplicates(values: list[str]) -> list[str]:
         return [value for value, count in Counter(values).items() if count > 1]
 
@@ -46,7 +57,17 @@ def main() -> None:
             continue
         if item.get("sentence", "").count("___") != 1:
             errors.append(f"sentence must contain one blank: {question_id}")
-        if re.search(r"\s+[.,?!]", item.get("sentence", "")):
+        sentence = item.get("sentence", "")
+        stripped_sentence = sentence.lstrip()
+        if (
+            stripped_sentence
+            and not stripped_sentence.startswith("___")
+            and not stripped_sentence[0].isupper()
+        ):
+            errors.append(f"sentence must start with uppercase: {question_id}")
+        if not sentence.endswith((".", "?", "!")):
+            errors.append(f"sentence requires ending punctuation: {question_id}")
+        if re.search(r"\s{2,}|\s+[.,?!]|[（(]\s|\s[）)]", sentence):
             errors.append(f"space before punctuation: {question_id}")
         if item.get("answer") != word["english"]:
             errors.append(f"answer does not match headword: {question_id}")
@@ -54,6 +75,24 @@ def main() -> None:
             errors.append(f"answer must be lowercase: {question_id}")
         if not item.get("japaneseSentence") or not item.get("explanation"):
             errors.append(f"missing translation or explanation: {question_id}")
+        if not item.get("japaneseSentence", "").endswith(("。", "？", "！")):
+            errors.append(f"translation requires ending punctuation: {question_id}")
+        if not item.get("explanation", "").endswith(("。", "？", "！")):
+            errors.append(f"explanation requires ending punctuation: {question_id}")
+        if re.search(
+            rf"\b{re.escape(item.get('answer', ''))}\b",
+            sentence,
+            re.IGNORECASE,
+        ):
+            errors.append(f"sentence reveals its answer: {question_id}")
+
+        article_match = re.search(r"\b(a|an)\s+___", sentence, re.IGNORECASE)
+        if article_match and item.get("answer"):
+            expected_article = (
+                "an" if starts_with_vowel_sound(item["answer"]) else "a"
+            )
+            if article_match.group(1).lower() != expected_article:
+                errors.append(f"article does not match answer: {question_id}")
 
         distractors = item.get("distractorWordIds", [])
         if len(distractors) != 3 or len(set(distractors)) != 3:
@@ -63,15 +102,28 @@ def main() -> None:
         unknown_distractors = [item_id for item_id in distractors if item_id not in word_by_id]
         if unknown_distractors:
             errors.append(f"unknown distractors: {question_id} {unknown_distractors}")
-        wrong_level_distractors = [
+        known_distractor_words = [
+            word_by_id[item_id]
+            for item_id in distractors
+            if item_id in word_by_id
+        ]
+        if len({part_of_speech(item) for item in known_distractor_words}) > 1:
+            errors.append(f"distractor parts of speech are mixed: {question_id}")
+        visible_choices = [item.get("answer", "")] + [
+            candidate.get("english", "").lower()
+            for candidate in known_distractor_words
+        ]
+        if len(visible_choices) != len(set(visible_choices)):
+            errors.append(f"visible choices are duplicated: {question_id}")
+        harder_distractors = [
             item_id for item_id in distractors
             if item_id in word_by_id
-            and word_by_id[item_id].get("level") != word.get("level")
+            and word_by_id[item_id].get("level", 99) > word.get("level", 0)
         ]
-        if wrong_level_distractors:
+        if harder_distractors:
             errors.append(
-                f"distractors must use the target game level: "
-                f"{question_id} {wrong_level_distractors}"
+                f"distractors must not exceed the target game level: "
+                f"{question_id} {harder_distractors}"
             )
 
         source = item.get("source")

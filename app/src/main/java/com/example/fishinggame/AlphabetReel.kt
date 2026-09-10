@@ -153,9 +153,10 @@ internal fun AlphabetReelPanel(
     }
 
     val wholePulseValue = wholeAnswerPulse.value
-    val wholePulseScale = 1f + 0.025f * sin(
+    val wholeCorrectEmphasis = sin(
         PI.toFloat() * wholePulseValue
     )
+    val wholePulseScale = 1f + 0.025f * wholeCorrectEmphasis
     val successColor = Color(0xFF43A047)
 
     Surface(
@@ -196,9 +197,23 @@ internal fun AlphabetReelPanel(
                 )
                 Text(
                     text = "合計 ${rotations.take(reelCount).sum()}回転",
+                    modifier = Modifier.graphicsLayer {
+                        val totalScale = 1f +
+                            0.65f * wholeCorrectEmphasis
+                        scaleX = totalScale
+                        scaleY = totalScale
+                    },
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = if (wholePulseValue > 0f) {
+                        FontWeight.Black
+                    } else {
+                        FontWeight.Bold
+                    },
+                    color = if (wholePulseValue > 0f) {
+                        successColor
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
                 )
             }
 
@@ -329,6 +344,7 @@ private fun AlphabetReel(
     val previousLetter = alphabetLetterAfterSteps(currentLetter, 25)
     val nextLetter = alphabetLetterAfterSteps(currentLetter, 1)
     val reelShape = RoundedCornerShape(10.dp)
+    val correctEmphasis = sin(PI.toFloat() * correctPulse.value)
 
     Column(
         modifier = Modifier.width(58.dp),
@@ -339,9 +355,7 @@ private fun AlphabetReel(
             modifier = Modifier
                 .size(width = 58.dp, height = 72.dp)
                 .graphicsLayer {
-                    val pulseScale = 1f + 0.08f * sin(
-                        PI.toFloat() * correctPulse.value
-                    )
+                    val pulseScale = 1f + 0.08f * correctEmphasis
                     scaleX = pulseScale
                     scaleY = pulseScale
                 }
@@ -407,9 +421,26 @@ private fun AlphabetReel(
             text = if (position == null) {
                 "開始 A"
             } else {
-                "$position: +$rotationSteps"
+                "$rotationSteps"
+            },
+            modifier = Modifier.graphicsLayer {
+                val numberScale = 1f + 0.8f * correctEmphasis
+                scaleX = numberScale
+                scaleY = numberScale
             },
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (
+                correctPulse.value > 0f && position != null
+            ) {
+                FontWeight.Black
+            } else {
+                FontWeight.Normal
+            },
+            color = if (correctPulse.value > 0f && position != null) {
+                Color(0xFF2E7D32)
+            } else {
+                Color.Unspecified
+            },
             maxLines = 1
         )
     }

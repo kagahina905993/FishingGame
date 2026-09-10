@@ -19,7 +19,8 @@ data class FishingPoint(
     val mapId: String,
     val name: String,
     val description: String,
-    val fishSpawns: List<FishSpawn>
+    val fishSpawns: List<FishSpawn>,
+    val lordFishName: String? = null
 )
 
 const val FOOTHILL_STREAM_MAP_ID = "foothill_stream"
@@ -43,8 +44,11 @@ val fishingPoints = listOf(
         fishSpawns = listOf(
             FishSpawn(fishName = "カワムツ", weight = 100),
             FishSpawn(fishName = "オイカワ", weight = 80),
-            FishSpawn(fishName = "タカハヤ", weight = 70)
-        )
+            FishSpawn(fishName = "タカハヤ", weight = 70),
+            FishSpawn(fishName = "鯉", weight = 50),
+            FishSpawn(fishName = "錦鯉", weight = 20)
+        ),
+        lordFishName = "錦鯉"
     )
 )
 
@@ -61,6 +65,9 @@ fun findFishingMap(mapId: String?): FishingMap? =
 
 fun findFishingPoint(pointId: String?): FishingPoint? =
     fishingPoints.firstOrNull { it.id == pointId }
+
+fun isFishingAreaLord(fishName: String): Boolean =
+    fishingPoints.any { it.lordFishName == fishName }
 
 fun pointsForMap(mapId: String): List<FishingPoint> =
     fishingPoints.filter { it.mapId == mapId }

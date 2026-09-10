@@ -312,7 +312,14 @@ private fun GameTopHud(state: GameUiState, fishState: FishState) {
                     style = MaterialTheme.typography.labelSmall
                 )
                 Text(
-                    text = fishState.fish.name,
+                    text = if (
+                        state.selectedPoint?.lordFishName ==
+                        fishState.fish.name
+                    ) {
+                        "【主】${fishState.fish.name}"
+                    } else {
+                        fishState.fish.name
+                    },
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -1257,7 +1264,14 @@ private fun GameResultPanel(
             )
             Text(
                 text = if (wasCaught) {
-                    "${fishState.fish.name}を釣り上げた！"
+                    if (
+                        state.selectedPoint?.lordFishName ==
+                        fishState.fish.name
+                    ) {
+                        "主・${fishState.fish.name}を釣り上げた！"
+                    } else {
+                        "${fishState.fish.name}を釣り上げた！"
+                    }
                 } else if (studyComplete) {
                     "${state.studyMode.displayName}が完了！"
                 } else {

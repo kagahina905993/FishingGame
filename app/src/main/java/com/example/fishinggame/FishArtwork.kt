@@ -90,13 +90,15 @@ fun FishArtwork(
     }
 }
 
-private fun fishArtworkResources(fish: Fish): List<Int> = when (fish.name) {
+internal fun fishArtworkResources(fish: Fish): List<Int> = when (fish.name) {
     "カワムツ" -> listOf(
         R.drawable.fish_kawamutsu_0,
         R.drawable.fish_kawamutsu_1
     )
     "オイカワ" -> listOf(R.drawable.fish_oikawa)
     "タカハヤ" -> listOf(R.drawable.fish_takahaya)
+    "鯉" -> listOf(R.drawable.fish_koi)
+    "錦鯉" -> listOf(R.drawable.fish_nishikigoi)
     else -> emptyList()
 }
 

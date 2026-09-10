@@ -22,7 +22,9 @@ class FishingAreaTest {
         val configuredFishNames = setOf(
             "カワムツ",
             "オイカワ",
-            "タカハヤ"
+            "タカハヤ",
+            "鯉",
+            "錦鯉"
         )
         val selectedFishNames = mutableSetOf<String>()
 
@@ -39,6 +41,19 @@ class FishingAreaTest {
     }
 
     @Test
+    fun sunlitShallows_hasNishikigoiAsItsLord() {
+        val point = requireNotNull(
+            findFishingPoint(SUNLIT_SHALLOWS_POINT_ID)
+        )
+
+        assertEquals("錦鯉", point.lordFishName)
+        assertTrue(isFishingAreaLord("錦鯉"))
+        assertTrue(
+            point.fishSpawns.any { it.fishName == point.lordFishName }
+        )
+    }
+
+    @Test
     fun everyFishingPoint_referencesExistingMapAndFish() {
         fishingPoints.forEach { point ->
             assertTrue(findFishingMap(point.mapId) != null)
@@ -46,6 +61,12 @@ class FishingAreaTest {
             point.fishSpawns.forEach { spawn ->
                 assertTrue(fishes.any { it.name == spawn.fishName })
                 assertTrue(spawn.weight > 0)
+            }
+            point.lordFishName?.let { lordFishName ->
+                assertTrue(fishes.any { it.name == lordFishName })
+                assertTrue(
+                    point.fishSpawns.any { it.fishName == lordFishName }
+                )
             }
         }
     }
