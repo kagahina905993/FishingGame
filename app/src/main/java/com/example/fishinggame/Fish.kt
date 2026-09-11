@@ -51,6 +51,18 @@ data class FishState(
         }
 }
 
+private const val LARGE_SPECIMEN_RANGE_RATIO = 0.8f
+
+internal fun FishState.isLargeSpecimen(): Boolean {
+    val sizeRange = fish.maxSizeCm - fish.minSizeCm
+    val largeThreshold = if (sizeRange <= 0f) {
+        fish.maxSizeCm
+    } else {
+        fish.minSizeCm + sizeRange * LARGE_SPECIMEN_RANGE_RATIO
+    }
+    return sizeCm >= largeThreshold
+}
+
 fun createFishState(
     fish: Fish,
     random: Random = Random.Default
@@ -161,25 +173,25 @@ val fishes = listOf(
 
     Fish(
         name = "アジ",
-        minHp = 50,
-        maxHp = 65,
-        minDistance = 5.0f,
-        maxDistance = 8.0f,
+        minHp = 55,
+        maxHp = 75,
+        minDistance = 6.0f,
+        maxDistance = 10.0f,
         rarity = FishRarity.COMMON,
-        minSizeCm = 15f,
+        minSizeCm = 18f,
         maxSizeCm = 40f,
-        description = "群れで泳ぐ身近な魚。小さくても引きは元気。"
+        description = "群れで泳ぐ身近な海の魚。イワシより力強く走り回る。"
     ),
 
     Fish(
         name = "イワシ",
-        minHp = 40,
-        maxHp = 55,
+        minHp = 32,
+        maxHp = 45,
         minDistance = 3.0f,
-        maxDistance = 6.0f,
+        maxDistance = 5.0f,
         rarity = FishRarity.COMMON,
         minSizeCm = 10f,
-        maxSizeCm = 25f,
+        maxSizeCm = 24f,
         description = "大きな群れを作る小型魚。初心者でも狙いやすい。"
     ),
 
@@ -269,13 +281,13 @@ val fishes = listOf(
 
     Fish(
         name = "マグロ",
-        minHp = 240,
-        maxHp = 320,
-        minDistance = 20.0f,
-        maxDistance = 40.0f,
+        minHp = 155,
+        maxHp = 215,
+        minDistance = 18.0f,
+        maxDistance = 30.0f,
         rarity = FishRarity.LEGENDARY,
-        minSizeCm = 100f,
-        maxSizeCm = 300f,
+        minSizeCm = 90f,
+        maxSizeCm = 240f,
         description = "海を代表する巨大魚。最高クラスの獲物。"
     )
 )

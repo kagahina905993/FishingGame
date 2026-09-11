@@ -54,6 +54,37 @@ The underlying EJDict-hand entries remain available from their source under CC0;
 the CC BY-SA notice for the combined dataset does not remove that status.
 No endorsement by the maintainer is implied.
 
+## Open vocabulary extension v1
+
+The project adds 2,934 headwords under the source identifier
+`OPEN_VOCAB_EXTENDED_V1`. They are not copied from an unofficial Eiken list.
+The importer intersects openly licensed lexical resources and retains an entry
+only when its English part of speech and Japanese WordNet concept match and the
+Japanese expression also occurs in EJDict-hand. The short prompt, app rank,
+course level, and Eiken-equivalent band are project adaptations.
+
+- WortUniversum English Vocabulary Database
+  - Source: https://huggingface.co/datasets/cstr/grundwortschatz-voc-en
+  - License: CC BY-SA 4.0
+- Open English WordNet 2024
+  - Copyright: Open English WordNet Community
+  - Source: https://en-word.net/downloads
+  - License: CC BY 4.0
+- Japanese Wordnet 2.0
+  - Copyright: 2009-2011 NICT, 2012-2015 Francis Bond, 2016-2024 Francis Bond
+    and Takayuki Kuribayashi
+  - Source: https://bond-lab.github.io/wnja/
+  - License: WordNet-style license permitting use, copying, modification, and
+    distribution when its copyright notice, statements, and disclaimer remain
+    on copies
+- EJDict-hand
+  - Revision: `5e1a630bfabb2791a78d14e4e356d85bb6437e34`
+  - License: CC0 / Public Domain
+
+The combined adapted dataset is distributed under CC BY-SA 4.0 while each
+upstream component retains its own license and attribution. No endorsement by
+the source authors or organizations is implied.
+
 ## CEFR-based Eiken-equivalent classification
 
 The app's Eiken-equivalent bands are estimates, not an official vocabulary

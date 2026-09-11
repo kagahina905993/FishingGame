@@ -38,6 +38,7 @@ fun validateWordDataset(words: List<Word>): List<Word> {
         when (word.wordList) {
             WordList.NGSL_1_2 -> word.ngslRank == word.sourceRank
             WordList.NAWL_1_2 -> word.ngslRank == null
+            WordList.OPEN_VOCAB_EXTENDED_V1 -> word.ngslRank == null
         }
     }) {
         "語彙リストと順位の組み合わせが不正です"

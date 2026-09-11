@@ -11,6 +11,7 @@ from pathlib import Path
 EXPECTED_SOURCE_COUNTS = {
     "NGSL_1_2": 2809,
     "NAWL_1_2": 957,
+    "OPEN_VOCAB_EXTENDED_V1": 2934,
 }
 ENGLISH_WORD = re.compile(r"^[a-z]+$")
 VALID_EIKEN_BASIS = {
@@ -19,6 +20,9 @@ VALID_EIKEN_BASIS = {
     "octanove_c1c2",
     "ngsl_frequency_fallback",
     "nawl_academic_fallback",
+    "open_profile_cefr",
+    "open_profile_frequency_split",
+    "wort_grade_frequency_estimate",
 }
 VALID_CEFR_TO_EIKEN = {
     "A1": {"5", "4", "3"},

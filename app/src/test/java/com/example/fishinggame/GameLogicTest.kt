@@ -58,10 +58,15 @@ class GameLogicTest {
             ngslRank = null,
             wordList = WordList.NAWL_1_2
         )
+        val extended = ngsl.copy(
+            ngslRank = null,
+            wordList = WordList.OPEN_VOCAB_EXTENDED_V1
+        )
 
         assertEquals("ngsl_1_2:0012", ngsl.wordId)
         assertEquals(ngsl.wordId, renamedMeaning.wordId)
         assertEquals("nawl_1_2:0012", nawl.wordId)
+        assertEquals("open_vocab_extended_v1:0012", extended.wordId)
         assertEquals(
             "ngsl_1_2:0012:ja-en",
             ngsl.learningItemId()
@@ -83,10 +88,19 @@ class GameLogicTest {
             sourceRank = 1,
             quizMeaning = "アルゴリズム"
         )
+        val extendedWord = word.copy(
+            english = "harbor",
+            ngslRank = null,
+            schoolGrade = SchoolGrade.HIGH_SCHOOL_3,
+            eikenLevel = EikenLevel.GRADE_PRE_1,
+            wordList = WordList.OPEN_VOCAB_EXTENDED_V1,
+            sourceRank = 1,
+            quizMeaning = "港"
+        )
 
         assertEquals(
-            listOf(ngslWord, nawlWord),
-            validateWordDataset(listOf(ngslWord, nawlWord))
+            listOf(ngslWord, nawlWord, extendedWord),
+            validateWordDataset(listOf(ngslWord, nawlWord, extendedWord))
         )
         assertThrowsIllegalArgument {
             validateWordDataset(listOf(ngslWord, ngslWord))
@@ -345,6 +359,28 @@ class GameLogicTest {
         val result = createFishState(fish, Random(1))
 
         assertTrue(result.sizeCm in 25f..30f)
+    }
+
+    @Test
+    fun largeSpecimen_usesTopTwentyPercentOfEachFishSizeRange() {
+        val fish = Fish(
+            name = "大物判定魚",
+            minHp = 10,
+            maxHp = 10,
+            minDistance = 1f,
+            maxDistance = 1f,
+            minSizeCm = 20f,
+            maxSizeCm = 70f
+        )
+
+        assertFalse(
+            FishState(fish, 10, 0, 1f, 0f, sizeCm = 59.9f)
+                .isLargeSpecimen()
+        )
+        assertTrue(
+            FishState(fish, 10, 0, 1f, 0f, sizeCm = 60f)
+                .isLargeSpecimen()
+        )
     }
 
     @Test

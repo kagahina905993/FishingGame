@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import NAWL 1.2 words and Japanese meanings into words.json."""
+"""Import NAWL 1.2 words while preserving later vocabulary sources."""
 
 import argparse
 import csv
@@ -95,6 +95,10 @@ def load_ejdict(directory: Path) -> dict[str, str]:
 def main() -> None:
     args = parse_args()
     all_words = json.loads(args.words.read_text(encoding="utf-8"))
+    later_sources = [
+        word for word in all_words
+        if word.get("wordList") not in {"NGSL_1_2", "NAWL_1_2"}
+    ]
     words = [
         word
         for word in all_words
@@ -158,9 +162,10 @@ def main() -> None:
         word["wordList"] = "NGSL_1_2"
         word["sourceRank"] = word["ngslRank"]
 
-    output = words + additions
-    if len(output) != 3766:
-        raise ValueError(f"Expected 3766 words, got {len(output)}")
+    output = words + additions + later_sources
+    expected_count = 3766 + len(later_sources)
+    if len(output) != expected_count:
+        raise ValueError(f"Expected {expected_count} words, got {len(output)}")
     args.words.write_text(
         json.dumps(output, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

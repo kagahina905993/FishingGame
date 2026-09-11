@@ -1,5 +1,6 @@
 package com.example.fishinggame
 
+import android.media.MediaPlayer
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,6 +44,7 @@ fun HookScreen(
     onStartBattle: () -> Unit
 ) {
     val fish = state.currentFish?.fish
+    val applicationContext = LocalContext.current.applicationContext
     val approachProgress = remember(fish?.name) { Animatable(0f) }
     val nibbleProgress = remember(fish?.name) { Animatable(0f) }
     val hookedProgress = remember(fish?.name) { Animatable(0f) }
@@ -56,27 +59,43 @@ fun HookScreen(
         animationStage = HookAnimationStage.WAITING
         if (fish == null) return@LaunchedEffect
 
-        delay(350L)
-        animationStage = HookAnimationStage.APPROACHING
-        approachProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 700)
+        val castSoundPlayer = MediaPlayer.create(
+            applicationContext,
+            R.raw.reel_cast
         )
-        animationStage = HookAnimationStage.NIBBLING
-        nibbleProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 450,
-                easing = LinearEasing
+        var splashSoundPlayer: MediaPlayer? = null
+        try {
+            castSoundPlayer?.start()
+            delay(350L)
+            splashSoundPlayer = MediaPlayer.create(
+                applicationContext,
+                R.raw.lure_splash
             )
-        )
-        animationStage = HookAnimationStage.BITING
-        delay(160L)
-        hookedProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 440)
-        )
-        animationStage = HookAnimationStage.HOOKED
+            splashSoundPlayer?.start()
+            animationStage = HookAnimationStage.APPROACHING
+            approachProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 700)
+            )
+            animationStage = HookAnimationStage.NIBBLING
+            nibbleProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 450,
+                    easing = LinearEasing
+                )
+            )
+            animationStage = HookAnimationStage.BITING
+            delay(160L)
+            hookedProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 440)
+            )
+            animationStage = HookAnimationStage.HOOKED
+        } finally {
+            splashSoundPlayer?.release()
+            castSoundPlayer?.release()
+        }
     }
 
     val transition = rememberInfiniteTransition(label = "hookPulse")

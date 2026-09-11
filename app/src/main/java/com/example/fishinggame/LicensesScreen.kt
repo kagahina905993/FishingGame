@@ -24,6 +24,16 @@ private const val CC0_URL =
     "https://creativecommons.org/publicdomain/zero/1.0/"
 private const val CEFR_J_URL =
     "https://github.com/openlanguageprofiles/olp-en-cefrj"
+private const val WORT_UNIVERSUM_URL =
+    "https://huggingface.co/datasets/cstr/grundwortschatz-voc-en"
+private const val OPEN_ENGLISH_WORDNET_URL =
+    "https://en-word.net/downloads"
+private const val JAPANESE_WORDNET_URL =
+    "https://bond-lab.github.io/wnja/"
+private const val SOUND_EFFECT_LAB_URL =
+    "https://soundeffect-lab.info/"
+private const val SOUND_EFFECT_LAB_TERMS_URL =
+    "https://soundeffect-lab.info/agreement/"
 
 @Composable
 fun LicensesScreen(
@@ -41,8 +51,9 @@ fun LicensesScreen(
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = "このアプリの単語データ3,766語は、" +
-                "NGSL 1.2（2,809語）とNAWL 1.2（957語）を基にしています。"
+            text = "このアプリの単語データ6,700語は、" +
+                "NGSL 1.2（2,809語）、NAWL 1.2（957語）、" +
+                "公開語彙資料を照合した追加2,934語で構成しています。"
         )
         Text(
             text = "文章穴埋め問題と文章4択の英文・和文・解説は、" +
@@ -117,6 +128,52 @@ fun LicensesScreen(
             onClick = { uriHandler.openUri(CEFR_J_URL) }
         ) {
             Text(text = "CEFR-J語彙データと利用条件")
+        }
+        Text(
+            text = "追加語彙の照合元\n" +
+                "WortUniversum: CC BY-SA 4.0\n" +
+                "Open English WordNet 2024: CC BY 4.0\n" +
+                "Japanese Wordnet 2.0: WordNet形式のライセンス"
+        )
+        Text(
+            text = "Japanese Wordnet 2.0 © 2009-2011 NICT, " +
+                "2012-2015 Francis Bond, 2016-2024 Francis Bond and " +
+                "Takayuki Kuribayashi"
+        )
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri(WORT_UNIVERSUM_URL) }
+        ) {
+            Text(text = "WortUniversum")
+        }
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri(OPEN_ENGLISH_WORDNET_URL) }
+        ) {
+            Text(text = "Open English WordNet")
+        }
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri(JAPANESE_WORDNET_URL) }
+        ) {
+            Text(text = "Japanese Wordnet")
+        }
+        Text(
+            text = "効果音\n" +
+                "提供：効果音ラボ（Sound Effect Lab）\n" +
+                "投入・着水・捕獲などの操作・演出音として使用しています。"
+        )
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri(SOUND_EFFECT_LAB_URL) }
+        ) {
+            Text(text = "効果音ラボ")
+        }
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri(SOUND_EFFECT_LAB_TERMS_URL) }
+        ) {
+            Text(text = "効果音ラボ利用規約")
         }
         Button(
             modifier = Modifier.fillMaxWidth(),

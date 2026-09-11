@@ -114,7 +114,8 @@ enum class SchoolGrade(
 
 enum class WordList(val code: String) {
     NGSL_1_2("NGSL_1_2"),
-    NAWL_1_2("NAWL_1_2");
+    NAWL_1_2("NAWL_1_2"),
+    OPEN_VOCAB_EXTENDED_V1("OPEN_VOCAB_EXTENDED_V1");
 
     companion object {
         fun fromCode(code: String): WordList? =
@@ -156,6 +157,7 @@ enum class StudyMode(val displayName: String) {
 
 enum class GamePhase {
     TITLE,
+    TARGET_LEVEL_SELECTION,
     LICENSES,
     MAP_SELECTION,
     POINT_SELECTION,
@@ -204,6 +206,7 @@ data class GameUiState(
     val selectedLevel: Int? = null,
     val selectedSchoolGrade: SchoolGrade? = null,
     val selectedEikenLevel: EikenLevel? = null,
+    val targetEikenLevel: EikenLevel? = null,
     val studyMode: StudyMode = StudyMode.NORMAL,
     val questionMode: QuestionMode = QuestionMode.WORD_INPUT,
     val currentQuestionPresentation: QuestionPresentation =

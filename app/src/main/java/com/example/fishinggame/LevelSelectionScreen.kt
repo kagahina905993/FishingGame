@@ -9,14 +9,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -24,17 +18,14 @@ import androidx.compose.ui.unit.dp
 fun LevelSelectionScreen(
     modifier: Modifier = Modifier,
     state: GameUiState,
-    onSelectLevel: (Int) -> Unit,
-    onSelectSchoolGrade: (SchoolGrade) -> Unit,
-    onSelectEikenLevel: (EikenLevel) -> Unit,
+    onStartTargetLevel: () -> Unit,
+    onChangeTargetLevel: () -> Unit,
     onSelectReviewMode: () -> Unit,
     onSelectWeakMode: () -> Unit,
     onSelectQuestionMode: (QuestionMode) -> Unit,
     onSelectDebugSentenceQuestions: () -> Unit,
     onOpenFishCollection: () -> Unit
 ) {
-    var selectedRangeTab by rememberSaveable { mutableIntStateOf(0) }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -44,7 +35,7 @@ fun LevelSelectionScreen(
                 " ＞ ${state.selectedPoint?.name ?: "ポイント未選択"}",
             style = MaterialTheme.typography.labelLarge
         )
-        Text(text = "出題範囲を選んでください")
+        Text(text = "問題の設定")
 
         Text(
             text = "出題形式",
@@ -131,66 +122,46 @@ fun LevelSelectionScreen(
         }
 
         Text(
-            text = "通常学習の出題範囲",
+            text = "目標レベル",
             style = MaterialTheme.typography.titleMedium
         )
-        PrimaryTabRow(selectedTabIndex = selectedRangeTab) {
-            listOf("学年", "英検", "ゲーム").forEachIndexed { index, label ->
-                Tab(
-                    selected = selectedRangeTab == index,
-                    onClick = { selectedRangeTab = index },
-                    text = { Text(label) }
-                )
+        val targetLevel = state.targetEikenLevel
+        if (targetLevel == null) {
+            Text(text = "目標レベルが選択されていません")
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onChangeTargetLevel
+            ) {
+                Text(text = "目標レベルを選ぶ")
             }
-        }
-
-        when (selectedRangeTab) {
-            0 -> SchoolGrade.entries.forEach { schoolGrade ->
-                val wordCount = state.allWords.count {
-                    it.schoolGrade == schoolGrade
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = wordCount > 0,
-                    onClick = { onSelectSchoolGrade(schoolGrade) }
-                ) {
-                    Text(text = "${schoolGrade.displayName}（${wordCount}語）")
-                }
+        } else {
+            val wordCount = state.allWords.count {
+                it.eikenLevel == targetLevel
             }
-
-            1 -> {
-                Text(text = "英検相当の推定級（新出語）")
-                EikenLevel.entries.forEach { eikenLevel ->
-                    val wordCount = state.allWords.count {
-                        it.eikenLevel == eikenLevel
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = wordCount > 0,
-                        onClick = { onSelectEikenLevel(eikenLevel) }
-                    ) {
-                        Text(text = "${eikenLevel.displayName}（${wordCount}語）")
-                    }
-                }
-                Text(
-                    text = "公式単語表ではなく、CEFR-J等を基にした" +
-                        "学習用の推定分類です"
-                )
+            Text(text = "${targetLevel.displayName}（${wordCount}語）")
+            Text(
+                text = "通常問題は目標級を中心に、存在する範囲で" +
+                    "直下の級とさらに下の基礎確認問題を少し混ぜます。",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = wordCount > 0,
+                onClick = onStartTargetLevel
+            ) {
+                Text(text = "この目標レベルで釣りを始める")
             }
-
-            else -> state.allWords
-                .map { it.level }
-                .distinct()
-                .sorted()
-                .forEach { level ->
-                    val wordCount = state.allWords.count { it.level == level }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onSelectLevel(level) }
-                    ) {
-                        Text(text = "レベル$level（${wordCount}語）")
-                    }
-                }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onChangeTargetLevel
+            ) {
+                Text(text = "目標レベルを変更")
+            }
+            Text(
+                text = "公式単語表ではなく、CEFR-J等を基にした" +
+                    "ゲーム内の推定分類です",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
 
         Text(

@@ -31,6 +31,7 @@ fun FishingGameApp(gameViewModel: GameViewModel) {
     val supportsBackNavigation = state.phase in setOf(
         GamePhase.COLLECTION,
         GamePhase.LICENSES,
+        GamePhase.TARGET_LEVEL_SELECTION,
         GamePhase.MAP_SELECTION,
         GamePhase.POINT_SELECTION,
         GamePhase.SETUP,
@@ -103,6 +104,15 @@ fun FishingGameApp(gameViewModel: GameViewModel) {
                 )
             }
 
+            state.phase == GamePhase.TARGET_LEVEL_SELECTION -> {
+                TargetLevelSelectionScreen(
+                    modifier = scrollableScreenModifier,
+                    state = state,
+                    onSelectTargetLevel =
+                        gameViewModel::selectTargetEikenLevel
+                )
+            }
+
             state.phase == GamePhase.MAP_SELECTION -> {
                 MapSelectionScreen(
                     modifier = scrollableScreenModifier,
@@ -131,11 +141,10 @@ fun FishingGameApp(gameViewModel: GameViewModel) {
                 LevelSelectionScreen(
                     modifier = scrollableScreenModifier,
                     state = state,
-                    onSelectLevel = gameViewModel::selectLevel,
-                    onSelectSchoolGrade =
-                        gameViewModel::selectSchoolGrade,
-                    onSelectEikenLevel =
-                        gameViewModel::selectEikenLevel,
+                    onStartTargetLevel =
+                        gameViewModel::startTargetLevel,
+                    onChangeTargetLevel =
+                        gameViewModel::openTargetLevelSelection,
                     onSelectReviewMode =
                         gameViewModel::selectReviewMode,
                     onSelectWeakMode =
@@ -224,6 +233,7 @@ private fun FishingGameBottomBar(
             }
         }
 
+        GamePhase.TARGET_LEVEL_SELECTION,
         GamePhase.MAP_SELECTION,
         GamePhase.POINT_SELECTION,
         GamePhase.SETUP,
@@ -239,8 +249,14 @@ private fun FishingGameBottomBar(
                 ) {
                     Text(
                         text = when (state.phase) {
+                            GamePhase.TARGET_LEVEL_SELECTION ->
+                                if (state.selectedPointId == null) {
+                                    "タイトルへ戻る"
+                                } else {
+                                    "問題設定へ戻る"
+                                }
                             GamePhase.SETUP -> "釣りポイントへ戻る"
-                            GamePhase.HOOK -> "レベル選択へ戻る"
+                            GamePhase.HOOK -> "問題設定へ戻る"
                             else -> "戻る"
                         }
                     )
@@ -259,7 +275,7 @@ private fun FishingGameBottomBar(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = onReturnToLevelSelection
                     ) {
-                        Text(text = "レベル選択へ戻る")
+                        Text(text = "問題設定へ戻る")
                     }
                 }
             }
@@ -289,7 +305,7 @@ private fun FishingGameBottomBar(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onReturnToLevelSelection
                 ) {
-                    Text(text = "レベル選択へ戻る")
+                    Text(text = "問題設定へ戻る")
                 }
             }
         }

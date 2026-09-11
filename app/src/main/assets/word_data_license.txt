@@ -32,6 +32,37 @@ EJDict-hand was used for long-form Japanese dictionary entries.
 The underlying EJDict-hand entries remain available under CC0.
 No endorsement by its maintainer is implied.
 
+OPEN VOCABULARY EXTENSION V1
+
+The additional 2,934 headwords were selected by this project by intersecting
+the following openly licensed resources. Entries were retained only when an
+English part of speech and a Japanese WordNet concept matched and the same
+Japanese expression was present in EJDict-hand. The resulting selection,
+short quiz prompts, ranks, and Eiken-equivalent bands are project adaptations.
+
+WortUniversum English Vocabulary Database
+Source: https://huggingface.co/datasets/cstr/grundwortschatz-voc-en
+License: Creative Commons Attribution-ShareAlike 4.0 International
+
+Open English WordNet 2024
+Open English WordNet Community
+Source: https://en-word.net/downloads
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+
+Japanese Wordnet 2.0
+Copyright 2009-2011 NICT, 2012-2015 Francis Bond, and 2016-2024
+Francis Bond and Takayuki Kuribayashi
+Source: https://bond-lab.github.io/wnja/
+License: Japanese WordNet / WordNet-style license; use, copying,
+modification, and distribution are permitted with preservation of its
+copyright notice, statements, and disclaimer.
+
+The extended adapted words.json dataset continues to be offered under
+CC BY-SA 4.0. Upstream material retains its respective license, copyright,
+and attribution. No endorsement by any source author or organization is
+implied.
+
 CEFR-BASED EIKEN-EQUIVALENT CLASSIFICATION
 
 CEFR-J Vocabulary Profile 1.5

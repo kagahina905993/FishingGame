@@ -99,6 +99,9 @@ internal fun fishArtworkResources(fish: Fish): List<Int> = when (fish.name) {
     "タカハヤ" -> listOf(R.drawable.fish_takahaya)
     "鯉" -> listOf(R.drawable.fish_koi)
     "錦鯉" -> listOf(R.drawable.fish_nishikigoi)
+    "アジ" -> listOf(R.drawable.fish_aji)
+    "イワシ" -> listOf(R.drawable.fish_iwashi)
+    "マグロ" -> listOf(R.drawable.fish_maguro)
     else -> emptyList()
 }
 

@@ -41,6 +41,9 @@ VALID_BASIS = {
     "octanove_c1c2",
     "ngsl_frequency_fallback",
     "nawl_academic_fallback",
+    "open_profile_cefr",
+    "open_profile_frequency_split",
+    "wort_grade_frequency_estimate",
 }
 
 # Re-grouping words by evidence-backed bands can place synonyms in one course.
@@ -302,6 +305,11 @@ def main() -> None:
     basis_counts: Counter[str] = Counter()
     cefr_counts: Counter[str] = Counter()
     for word in words:
+        if word.get("wordList") == "OPEN_VOCAB_EXTENDED_V1":
+            counts[str(word["eikenLevel"])] += 1
+            basis_counts[str(word["eikenClassificationBasis"])] += 1
+            cefr_counts[str(word["estimatedCefrLevel"])] += 1
+            continue
         profile = select_profile(word, profiles)
         if profile is None:
             eiken, cefr, basis = classify_unprofiled_word(word)

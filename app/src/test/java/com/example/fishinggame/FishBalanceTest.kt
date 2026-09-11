@@ -23,17 +23,23 @@ class FishBalanceTest {
     }
 
     @Test
-    fun fishHp_matchesTargetAnswerCountsForEachRarity() {
-        val targetAnswerCounts = mapOf(
+    fun fishHp_matchesDesignedAnswerCounts() {
+        val targetAnswerCountsByRarity = mapOf(
             FishRarity.COMMON to 3..5,
             FishRarity.UNCOMMON to 5..8,
             FishRarity.RARE to 7..11,
             FishRarity.EPIC to 11..17,
             FishRarity.LEGENDARY to 15..20
         )
+        val targetAnswerCountsByFish = mapOf(
+            "イワシ" to 2..3,
+            "アジ" to 4..5,
+            "マグロ" to 10..14
+        )
 
         fishes.forEach { fish ->
-            val target = requireNotNull(targetAnswerCounts[fish.rarity])
+            val target = targetAnswerCountsByFish[fish.name]
+                ?: requireNotNull(targetAnswerCountsByRarity[fish.rarity])
             val minimumAnswers = answersToCatch(fish.minHp)
             val maximumAnswers = answersToCatch(fish.maxHp)
 

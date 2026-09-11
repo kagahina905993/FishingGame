@@ -21,12 +21,15 @@ private data class InitialAppData(
     val words: Result<List<Word>>,
     val sentenceQuestions: Result<List<SentenceQuestion>>,
     val fishCollection: Map<String, FishCollectionRecord>,
+    val targetEikenLevel: EikenLevel?,
     val learning: Result<LearningDashboardData>
 )
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val fishCollectionStorage =
         FishCollectionStorage(application)
+    private val targetLevelStorage =
+        TargetLevelStorage(application)
     private val learningTimeProvider: LearningTimeProvider =
         SystemLearningTimeProvider
     private val learningRepository = LearningRepository(
@@ -71,6 +74,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         sentenceQuestions = questionResult,
                         fishCollection =
                             fishCollectionStorage.loadFishCollection(),
+                        targetEikenLevel =
+                            targetLevelStorage.loadTargetEikenLevel(),
                         learning = learningResult
                     )
                 }
@@ -82,6 +87,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                             _uiState.value = GameUiState(
                                 fishCollectionRecords =
                                     initialData.fishCollection,
+                                targetEikenLevel =
+                                    initialData.targetEikenLevel,
                                 errorMessage = error.message
                                     ?: "文章問題を読み込めませんでした"
                             )
@@ -94,6 +101,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                             .associateBy { it.wordId },
                         phase = GamePhase.TITLE,
                         fishCollectionRecords = initialData.fishCollection,
+                        targetEikenLevel = initialData.targetEikenLevel,
                         learningStates = learningData
                             ?.states
                             .orEmpty()
@@ -119,6 +127,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 onFailure = { error ->
                     GameUiState(
                         fishCollectionRecords = initialData.fishCollection,
+                        targetEikenLevel = initialData.targetEikenLevel,
                         errorMessage = error.message
                             ?: "単語データを読み込めませんでした"
                     )
@@ -380,7 +389,36 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun startGame() {
         val state = _uiState.value
         if (state.phase != GamePhase.TITLE) return
-        _uiState.value = state.copy(phase = GamePhase.MAP_SELECTION)
+        _uiState.value = state.copy(
+            phase = if (state.targetEikenLevel == null) {
+                GamePhase.TARGET_LEVEL_SELECTION
+            } else {
+                GamePhase.MAP_SELECTION
+            }
+        )
+    }
+
+    fun openTargetLevelSelection() {
+        val state = _uiState.value
+        if (state.phase != GamePhase.SETUP) return
+        _uiState.value = state.copy(
+            phase = GamePhase.TARGET_LEVEL_SELECTION
+        )
+    }
+
+    fun selectTargetEikenLevel(eikenLevel: EikenLevel) {
+        val state = _uiState.value
+        if (state.phase != GamePhase.TARGET_LEVEL_SELECTION) return
+
+        targetLevelStorage.saveTargetEikenLevel(eikenLevel)
+        _uiState.value = state.copy(
+            targetEikenLevel = eikenLevel,
+            phase = if (state.selectedPointId == null) {
+                GamePhase.MAP_SELECTION
+            } else {
+                GamePhase.SETUP
+            }
+        )
     }
 
     fun openLicenses() {
@@ -448,6 +486,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val state = _uiState.value
         _uiState.value = when (state.phase) {
             GamePhase.LICENSES -> state.copy(phase = GamePhase.TITLE)
+            GamePhase.TARGET_LEVEL_SELECTION -> state.copy(
+                phase = if (state.selectedPointId == null) {
+                    GamePhase.TITLE
+                } else {
+                    GamePhase.SETUP
+                }
+            )
             GamePhase.COLLECTION -> state.copy(
                 phase = state.collectionReturnPhase
             )
@@ -525,6 +570,36 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             selectedLevel = null,
             selectedSchoolGrade = null,
             selectedEikenLevel = eikenLevel,
+            studyMode = StudyMode.NORMAL
+        )
+    }
+
+    fun startTargetLevel() {
+        val state = _uiState.value
+        if (state.phase != GamePhase.SETUP) return
+        val target = state.targetEikenLevel
+        if (target == null) {
+            _uiState.value = state.copy(
+                phase = GamePhase.TARGET_LEVEL_SELECTION
+            )
+            return
+        }
+        val attemptedLearningItemIds = state.learningStates.values
+            .filter { it.totalAttemptCount > 0 }
+            .mapTo(mutableSetOf()) { it.learningItemId }
+        val targetCourseWords = buildTargetCourseWords(
+            words = state.allWords,
+            targetLevel = target,
+            urgentLearningItemIds =
+                state.reviewLearningItemIds + state.weakLearningItemIds,
+            attemptedLearningItemIds = attemptedLearningItemIds
+        )
+        startWithWords(
+            state = state,
+            words = targetCourseWords,
+            selectedLevel = null,
+            selectedSchoolGrade = null,
+            selectedEikenLevel = target,
             studyMode = StudyMode.NORMAL
         )
     }
