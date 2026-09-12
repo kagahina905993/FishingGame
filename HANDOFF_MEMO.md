@@ -72,6 +72,7 @@
 - 2026-09-12に海ステージ`青潮の沖合`とポイント`回遊魚の潮目`を追加した。イワシ・アジ・マグロだけが出現し、実効出現率は約52%・42%・6%。マップ・ポイント・HIT前は渓流と区別した仮の海面／海中Canvas背景を使う。
 - 2026-09-12にコンテスト用の一時的な主解放を追加した。`CONTEST_LORD_UNLOCK_ENABLED`で隔離し、主が設定されたマップの主以外を全種捕獲すると未捕獲の主を次の抽選で確定する。ポイント画面には捕獲進捗を表示し、抽選前の魚プレビューは表示しない。未解放の主の名前は「？？？（主）」と伏せる。デバッグの魚切替は確認用として解放条件を迂回できる。
 - GitHubから直接試遊できるよう、非デバッグの`contest`ビルド種別を追加した。ローカルのAndroidデバッグ署名でインストール可能にするが、`BuildConfig.DEBUG`はfalseなのでデバッグ操作は表示しない。GitHub ActionsはContest APKをartifactへ保存し、`contest-v*`タグでは`fishinggame-contest.apk`をGitHub Releasesへ公開する。これはコンテスト試遊用であり、正式公開時は提出者管理の署名鍵へ切り替える。
+- 2026-09-12に`contest-v0.1.0`を公開した。GitHub Actions run `34671310688`は成功し、公開Release `https://github.com/kagahina905993/FishingGame/releases/tag/contest-v0.1.0`へ9,504,793バイトの`fishinggame-contest.apk`を添付した。GitHubが記録したRelease assetのSHA-256は`e3512c02dfc641e221a9dbedc1d8d86c07499fe30f5030ae0da67d1f6ecd4456`。
 
 # 重要な仕様
 

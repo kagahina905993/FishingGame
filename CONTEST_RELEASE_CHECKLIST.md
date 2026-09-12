@@ -6,7 +6,7 @@
 - [x] 審査員向け`README.md`がある
 - [x] push・pull request・手動実行でテストとAPK生成を行うGitHub Actionsがある
 - [x] GitHub Actionsが実際に成功した
-- [ ] `contest-v*`タグでデバッグ操作のないContest APKをGitHub Releasesへ公開した
+- [x] `contest-v0.1.0`タグでデバッグ操作のないContest APKをGitHub Releasesへ公開した
 - [x] 端末固有の`.idea`設定、`local.properties`、署名情報を含めていない
 - [ ] アプリ本体のソースコードライセンスを決めた
 
@@ -32,10 +32,10 @@
 
 ## GitHub Release
 
-- [ ] 提出用タグを作成した（例：`contest-v0.1.0`）
-- [ ] 署名済みAPKをReleaseへ添付した
-- [ ] APKのSHA-256を掲載した
-- [ ] 対応Androidバージョンとインストール方法を掲載した
+- [x] 提出用タグ`contest-v0.1.0`を作成した
+- [x] 署名済み`fishinggame-contest.apk`をReleaseへ添付した
+- [x] APKのSHA-256を引き継ぎメモへ記録した
+- [x] 対応Androidバージョンとインストール方法を掲載した
 - [ ] 既知の未完成部分を掲載した
 - [ ] スクリーンショットまたは短いプレイ動画を掲載した
 
