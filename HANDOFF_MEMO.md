@@ -65,6 +65,7 @@
 - 自動投入音の開始から350ms後、魚が接近し始める瞬間にユーザー提供の約1.03秒の`raw/lure_splash.mp3`を着水音として1回再生する。元ファイルは`art-source/audio/lure_splash.mp3`へ保管する。
 - 2026-09-10に`testDebugUnitTest assembleDebug`が成功。Room計装テストは接続端末がなく未実行。
 - 2026-09-11にコンテスト提出準備として`README.md`、GitHub Actions、`ASSET_RIGHTS.md`、`CONTEST_RELEASE_CHECKLIST.md`を追加した。正式なアプリ名・applicationId・コードライセンス・署名済みrelease APKは未決定。MP3は効果音ラボ素材で、公式FAQによりゲームの操作・演出音、コンテスト、GitHub公開へ使用可能と確認した。重複する`art-source/audio/`はGit管理対象外にする。
+- 2026-09-12にコミット`6180fba`をGitHubの`main`へpushした。初回Android CIは3分18秒で成功し、12.6MBのデバッグAPK artifactを生成した。Node.js 20非推奨警告を解消するため`actions/upload-artifact`をv7へ更新した。
 
 # 重要な仕様
 

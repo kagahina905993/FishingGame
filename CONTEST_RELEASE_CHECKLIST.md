@@ -2,11 +2,11 @@
 
 ## GitHub
 
-- [ ] ローカルの完成版をコミットし、`main`へpushした
+- [x] ローカルの完成版をコミットし、`main`へpushした
 - [x] 審査員向け`README.md`がある
 - [x] push・pull request・手動実行でテストとAPK生成を行うGitHub Actionsがある
-- [ ] GitHub Actionsが実際に成功した
-- [ ] 端末固有の`.idea`設定、`local.properties`、署名情報を含めていない
+- [x] GitHub Actionsが実際に成功した
+- [x] 端末固有の`.idea`設定、`local.properties`、署名情報を含めていない
 - [ ] アプリ本体のソースコードライセンスを決めた
 
 ## 権利
