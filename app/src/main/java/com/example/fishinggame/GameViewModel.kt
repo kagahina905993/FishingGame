@@ -1087,7 +1087,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     lineTension = tensionAfterSkip,
                     skippedQuestionCount = state.skippedQuestionCount + 1,
                     consecutiveCorrectAnswerCount = 0
-                )
+                ),
+                recordCurrentQuestion = false
             )
             return
         }
@@ -1318,11 +1319,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun escapeCurrentFish(
         state: GameUiState,
-        recordLearning: Boolean = true
+        recordLearning: Boolean = true,
+        recordCurrentQuestion: Boolean = true
     ) {
         if (state.phase != GamePhase.INPUT) return
+        val escapedAtEpochMillis = learningTimeProvider.nowEpochMillis()
         val currentWord = state.word
-        val recordedState = if (
+        var recordedState = if (
             recordLearning &&
             !state.isCurrentLearningOutcomeRecorded &&
             currentWord != null
@@ -1335,10 +1338,23 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             state
         }
+        if (
+            recordCurrentQuestion &&
+            currentWord != null
+        ) {
+            recordedState = completeBattleQuestion(
+                state = recordedState,
+                word = currentWord,
+                finalAnswer = null,
+                outcome = BattleQuestionOutcome.LINE_BROKEN,
+                completedAtEpochMillis = escapedAtEpochMillis
+            )
+        }
         val escapedState = recordedState.completeCurrentStudyItem()
         _uiState.value = escapedState.copy(
             phase = GamePhase.RESULT,
             gameResult = GameResult.ESCAPED,
+            battleFinishedAtEpochMillis = escapedAtEpochMillis,
             lineTension = MAX_LINE_TENSION,
             consecutiveCorrectAnswerCount = 0,
             escapedFishCount = state.escapedFishCount + 1,

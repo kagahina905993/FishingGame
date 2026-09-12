@@ -188,14 +188,16 @@ class GameUiStateTest {
             battleQuestionResults = listOf(
                 result(BattleQuestionOutcome.FIRST_TRY_CORRECT),
                 result(BattleQuestionOutcome.CORRECTED_AFTER_MISTAKE),
-                result(BattleQuestionOutcome.SKIPPED)
+                result(BattleQuestionOutcome.SKIPPED),
+                result(BattleQuestionOutcome.LINE_BROKEN)
             )
         )
 
         assertTrue(state.battleInitialCorrectCount == 1)
         assertTrue(state.battleCorrectedAfterMistakeCount == 1)
         assertTrue(state.battleSkippedCount == 1)
-        assertTrue(state.battleInitialAccuracyPercent == 33)
+        assertTrue(state.battleLineBrokenCount == 1)
+        assertTrue(state.battleInitialAccuracyPercent == 25)
         assertTrue(state.battleDurationMillis == 70_000L)
     }
 

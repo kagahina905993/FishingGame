@@ -1445,9 +1445,11 @@ private fun GameResultPanel(
                 )
                 Text(
                     text = "時間をかけすぎたり、不正解やスキップが" +
-                        "続いたりすると糸が切れます。",
+                    "続いたりすると糸が切れます。",
                     style = MaterialTheme.typography.bodyMedium
                 )
+
+                BattleLearningResult(state = state)
             }
         }
     }
@@ -1499,6 +1501,16 @@ private fun BattleLearningResult(state: GameUiState) {
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold
             )
+            if (state.battleLineBrokenCount > 0) {
+                Text(
+                    text = "糸切れ ${state.battleLineBrokenCount}問",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             if (state.battleQuestionResults.isNotEmpty()) {
                 TextButton(
@@ -1538,11 +1550,13 @@ private fun BattleQuestionResultRow(
         BattleQuestionOutcome.FIRST_TRY_CORRECT -> "一発正解"
         BattleQuestionOutcome.CORRECTED_AFTER_MISTAKE -> "ミス後正解"
         BattleQuestionOutcome.SKIPPED -> "スキップ"
+        BattleQuestionOutcome.LINE_BROKEN -> "糸切れ"
     }
     val outcomeColor = when (result.outcome) {
         BattleQuestionOutcome.FIRST_TRY_CORRECT -> Color(0xFF2E7D32)
         BattleQuestionOutcome.CORRECTED_AFTER_MISTAKE -> Color(0xFFF57C00)
         BattleQuestionOutcome.SKIPPED -> MaterialTheme.colorScheme.error
+        BattleQuestionOutcome.LINE_BROKEN -> MaterialTheme.colorScheme.error
     }
 
     Surface(
@@ -1600,6 +1614,12 @@ private fun BattleQuestionResultRow(
                     result.outcome == BattleQuestionOutcome.SKIPPED ->
                         "初回回答 ${formatElapsedTime(result.firstResponseTimeMillis)}" +
                             "  ・  スキップ ${formatElapsedTime(result.totalTimeMillis)}"
+                    result.outcome == BattleQuestionOutcome.LINE_BROKEN &&
+                        result.firstAnswer == null ->
+                        "糸切れまで ${formatElapsedTime(result.totalTimeMillis)}"
+                    result.outcome == BattleQuestionOutcome.LINE_BROKEN ->
+                        "初回回答 ${formatElapsedTime(result.firstResponseTimeMillis)}" +
+                            "  ・  糸切れ ${formatElapsedTime(result.totalTimeMillis)}"
                     else ->
                         "初回回答 ${formatElapsedTime(result.firstResponseTimeMillis)}" +
                             "  ・  完了 ${formatElapsedTime(result.totalTimeMillis)}"

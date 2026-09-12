@@ -183,7 +183,8 @@ data class FishCollectionRecord(
 enum class BattleQuestionOutcome {
     FIRST_TRY_CORRECT,
     CORRECTED_AFTER_MISTAKE,
-    SKIPPED
+    SKIPPED,
+    LINE_BROKEN
 }
 
 data class BattleQuestionResult(
@@ -332,6 +333,11 @@ data class GameUiState(
     val battleSkippedCount: Int
         get() = battleQuestionResults.count {
             it.outcome == BattleQuestionOutcome.SKIPPED
+        }
+
+    val battleLineBrokenCount: Int
+        get() = battleQuestionResults.count {
+            it.outcome == BattleQuestionOutcome.LINE_BROKEN
         }
 
     val battleInitialAccuracyPercent: Int
