@@ -119,6 +119,8 @@ fun HookScreen(
             style = MaterialTheme.typography.labelLarge
         )
         StreamDiorama(
+            environment = state.selectedMap?.environment
+                ?: FishingEnvironment.STREAM,
             underwater = true,
             showFish = true,
             showHook = true,

@@ -54,6 +54,35 @@ class FishingAreaTest {
     }
 
     @Test
+    fun openSea_containsOffshoreCurrent() {
+        val map = requireNotNull(findFishingMap(OPEN_SEA_MAP_ID))
+        val points = pointsForMap(map.id)
+
+        assertEquals(listOf(OFFSHORE_CURRENT_POINT_ID), map.pointIds)
+        assertEquals(FishingEnvironment.OPEN_SEA, map.environment)
+        assertEquals(1, points.size)
+        assertEquals("回遊魚の潮目", points.single().name)
+    }
+
+    @Test
+    fun offshoreCurrent_spawnsOnlyIwashiAjiAndMaguro() {
+        val availableFish = fishesForPoint(OFFSHORE_CURRENT_POINT_ID)
+        val configuredFishNames = setOf("イワシ", "アジ", "マグロ")
+        val selectedFishNames = mutableSetOf<String>()
+
+        assertEquals(configuredFishNames, availableFish.map { it.name }.toSet())
+        repeat(500) { seed ->
+            val selected = selectRandomFishForPoint(
+                pointId = OFFSHORE_CURRENT_POINT_ID,
+                random = Random(seed)
+            )
+            assertTrue(selected.name in configuredFishNames)
+            selectedFishNames += selected.name
+        }
+        assertEquals(configuredFishNames, selectedFishNames)
+    }
+
+    @Test
     fun everyFishingPoint_referencesExistingMapAndFish() {
         fishingPoints.forEach { point ->
             assertTrue(findFishingMap(point.mapId) != null)
@@ -68,6 +97,16 @@ class FishingAreaTest {
                     point.fishSpawns.any { it.fishName == lordFishName }
                 )
             }
+        }
+    }
+
+    @Test
+    fun everyFishingMap_referencesOnlyItsOwnExistingPoints() {
+        fishingMaps.forEach { map ->
+            val points = map.pointIds.map(::findFishingPoint)
+            assertTrue(points.all { it != null })
+            assertTrue(points.filterNotNull().all { it.mapId == map.id })
+            assertEquals(map.pointIds.toSet(), pointsForMap(map.id).map { it.id }.toSet())
         }
     }
 }

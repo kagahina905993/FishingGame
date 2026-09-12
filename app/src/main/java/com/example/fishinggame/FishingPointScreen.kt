@@ -37,8 +37,10 @@ fun FishingPointScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     StreamDiorama(
+                        environment = map.environment,
                         showBobber = true,
-                        showFish = true
+                        showFish = true,
+                        fish = fishesForPoint(point.id).firstOrNull()
                     )
                     Text(
                         text = point.name,
@@ -46,8 +48,8 @@ fun FishingPointScreen(
                     )
                     Text(text = point.description)
                     Text(
-                        text = "確認されている魚：" +
-                            point.fishSpawns.size + "種類"
+                        text = "確認されている魚：" + point.fishSpawns
+                            .joinToString("・") { it.fishName }
                     )
                     Button(
                         modifier = Modifier.fillMaxWidth(),

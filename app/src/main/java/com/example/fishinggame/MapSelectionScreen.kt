@@ -31,7 +31,10 @@ fun MapSelectionScreen(
                     modifier = Modifier.padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    StreamDiorama(showBobber = true)
+                    StreamDiorama(
+                        environment = map.environment,
+                        showBobber = true
+                    )
                     Text(
                         text = map.name,
                         style = MaterialTheme.typography.titleLarge

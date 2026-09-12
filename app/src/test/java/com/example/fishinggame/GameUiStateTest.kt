@@ -301,16 +301,18 @@ class GameUiStateTest {
 
     @Test
     fun availableCollection_countsOnlyFishInImplementedPoints() {
-        val streamFishes = currentlyAvailableFishes
-        val seaFish = fishes.first { it.name == "アジ" }
+        val availableFishes = currentlyAvailableFishes
+        val unavailableFish = fishes.first { fish ->
+            availableFishes.none { it.name == fish.name }
+        }
         val state = GameUiState(
-            fishCollectionRecords = streamFishes.associate { fish ->
+            fishCollectionRecords = availableFishes.associate { fish ->
                 fish.name to FishCollectionRecord(caughtCount = 1)
-            } + (seaFish.name to FishCollectionRecord(caughtCount = 1))
+            } + (unavailableFish.name to FishCollectionRecord(caughtCount = 1))
         )
 
-        assertTrue(state.caughtSpeciesCount == streamFishes.size + 1)
-        assertTrue(state.availableCaughtSpeciesCount == streamFishes.size)
+        assertTrue(state.caughtSpeciesCount == availableFishes.size + 1)
+        assertTrue(state.availableCaughtSpeciesCount == availableFishes.size)
         assertTrue(state.isAvailableFishCollectionComplete)
     }
 }

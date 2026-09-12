@@ -6,8 +6,14 @@ data class FishingMap(
     val id: String,
     val name: String,
     val description: String,
-    val pointIds: List<String>
+    val pointIds: List<String>,
+    val environment: FishingEnvironment = FishingEnvironment.STREAM
 )
+
+enum class FishingEnvironment {
+    STREAM,
+    OPEN_SEA
+}
 
 data class FishSpawn(
     val fishName: String,
@@ -25,6 +31,8 @@ data class FishingPoint(
 
 const val FOOTHILL_STREAM_MAP_ID = "foothill_stream"
 const val SUNLIT_SHALLOWS_POINT_ID = "sunlit_shallows"
+const val OPEN_SEA_MAP_ID = "open_sea"
+const val OFFSHORE_CURRENT_POINT_ID = "offshore_current"
 
 val fishingMaps = listOf(
     FishingMap(
@@ -32,6 +40,13 @@ val fishingMaps = listOf(
         name = "麓の渓流",
         description = "山の木漏れ日が差し込む、町から近い穏やかな渓流。",
         pointIds = listOf(SUNLIT_SHALLOWS_POINT_ID)
+    ),
+    FishingMap(
+        id = OPEN_SEA_MAP_ID,
+        name = "青潮の沖合",
+        description = "小魚の群れと大型の回遊魚が行き交う、深い沖の海。",
+        pointIds = listOf(OFFSHORE_CURRENT_POINT_ID),
+        environment = FishingEnvironment.OPEN_SEA
     )
 )
 
@@ -49,6 +64,17 @@ val fishingPoints = listOf(
             FishSpawn(fishName = "錦鯉", weight = 20)
         ),
         lordFishName = "錦鯉"
+    ),
+    FishingPoint(
+        id = OFFSHORE_CURRENT_POINT_ID,
+        mapId = OPEN_SEA_MAP_ID,
+        name = "回遊魚の潮目",
+        description = "潮の流れがぶつかり、イワシやアジを追って大物も現れる。",
+        fishSpawns = listOf(
+            FishSpawn(fishName = "イワシ", weight = 100),
+            FishSpawn(fishName = "アジ", weight = 80),
+            FishSpawn(fishName = "マグロ", weight = 600)
+        )
     )
 )
 

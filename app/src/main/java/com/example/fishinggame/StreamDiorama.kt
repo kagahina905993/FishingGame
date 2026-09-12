@@ -26,6 +26,7 @@ import kotlin.math.sin
 @Composable
 fun StreamDiorama(
     modifier: Modifier = Modifier,
+    environment: FishingEnvironment = FishingEnvironment.STREAM,
     underwater: Boolean = false,
     showBobber: Boolean = false,
     showFish: Boolean = false,
@@ -56,7 +57,96 @@ fun StreamDiorama(
             val width = size.width
             val height = size.height
 
-            if (underwater) {
+            if (underwater && environment == FishingEnvironment.OPEN_SEA) {
+                drawRect(
+                    color = Color(0xFF07506B),
+                    size = Size(width, height)
+                )
+                drawRect(
+                    color = Color(0xFF1787A5),
+                    size = Size(width, height * 0.24f)
+                )
+                drawRect(
+                    color = Color(0xFF0B6D8C),
+                    topLeft = Offset(0f, height * 0.24f),
+                    size = Size(width, height * 0.34f)
+                )
+
+                repeat(5) { index ->
+                    val lightPath = Path().apply {
+                        val startX = width * (-0.04f + index * 0.25f)
+                        moveTo(startX, 0f)
+                        lineTo(startX + width * 0.10f, 0f)
+                        lineTo(startX + width * 0.26f, height * 0.78f)
+                        lineTo(startX + width * 0.13f, height * 0.78f)
+                        close()
+                    }
+                    drawPath(
+                        path = lightPath,
+                        color = Color.White.copy(
+                            alpha = if (index % 2 == 0) 0.11f else 0.06f
+                        )
+                    )
+                }
+
+                repeat(4) { index ->
+                    val waveY = height * (0.07f + index * 0.055f)
+                    drawLine(
+                        color = Color(0xFFB8F3F4).copy(alpha = 0.38f),
+                        start = Offset(width * (0.03f + index * 0.10f), waveY),
+                        end = Offset(width * (0.48f + index * 0.11f), waveY),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                }
+
+                val seabed = Path().apply {
+                    moveTo(0f, height * 0.86f)
+                    lineTo(width * 0.28f, height * 0.82f)
+                    lineTo(width * 0.58f, height * 0.88f)
+                    lineTo(width, height * 0.80f)
+                    lineTo(width, height)
+                    lineTo(0f, height)
+                    close()
+                }
+                drawPath(seabed, Color(0xFF887A58))
+
+                repeat(4) { index ->
+                    val baseX = width * (0.09f + index * 0.27f)
+                    val baseY = height * (0.84f + (index % 2) * 0.035f)
+                    val seaweed = Path().apply {
+                        moveTo(baseX, baseY)
+                        lineTo(baseX - 4.dp.toPx(), baseY - 28.dp.toPx())
+                        lineTo(baseX + 3.dp.toPx(), baseY - 16.dp.toPx())
+                        lineTo(baseX + 6.dp.toPx(), baseY)
+                        close()
+                    }
+                    drawPath(
+                        seaweed,
+                        if (index % 2 == 0) {
+                            Color(0xFF28795E)
+                        } else {
+                            Color(0xFF3C8B64)
+                        }
+                    )
+                }
+
+                listOf(
+                    Offset(width * 0.13f, height * 0.50f),
+                    Offset(width * 0.80f, height * 0.38f),
+                    Offset(width * 0.91f, height * 0.66f)
+                ).forEach { center ->
+                    repeat(3) { bubbleIndex ->
+                        drawCircle(
+                            color = Color(0xFFC8F7F3).copy(alpha = 0.52f),
+                            radius = (2 + bubbleIndex).dp.toPx(),
+                            center = Offset(
+                                center.x + bubbleIndex * 7.dp.toPx(),
+                                center.y - bubbleIndex * 13.dp.toPx()
+                            )
+                        )
+                    }
+                }
+            } else if (underwater) {
                 drawRect(
                     color = Color(0xFF176D83),
                     size = Size(width, height)
@@ -154,6 +244,54 @@ fun StreamDiorama(
                             )
                         )
                     }
+                }
+            } else if (environment == FishingEnvironment.OPEN_SEA) {
+                drawRect(
+                    color = Color(0xFF9EDDF0),
+                    size = Size(width, height * 0.43f)
+                )
+                drawRect(
+                    color = Color(0xFF157F9F),
+                    topLeft = Offset(0f, height * 0.43f),
+                    size = Size(width, height * 0.57f)
+                )
+                drawRect(
+                    color = Color(0xFF58BDD0),
+                    topLeft = Offset(0f, height * 0.43f),
+                    size = Size(width, 4.dp.toPx())
+                )
+
+                repeat(8) { index ->
+                    val y = height * (0.50f + index * 0.061f)
+                    val startX = if (index % 2 == 0) {
+                        width * 0.05f
+                    } else {
+                        width * 0.36f
+                    }
+                    drawLine(
+                        color = Color.White.copy(alpha = 0.26f),
+                        start = Offset(startX, y),
+                        end = Offset((startX + width * 0.40f).coerceAtMost(width), y),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                }
+
+                val distantIsland = Path().apply {
+                    moveTo(width * 0.69f, height * 0.43f)
+                    lineTo(width * 0.78f, height * 0.32f)
+                    lineTo(width * 0.90f, height * 0.43f)
+                    close()
+                }
+                drawPath(distantIsland, Color(0xFF4D7868))
+
+                repeat(3) { index ->
+                    val cloudX = width * (0.12f + index * 0.31f)
+                    val cloudY = height * (0.13f + (index % 2) * 0.08f)
+                    drawOval(
+                        color = Color.White.copy(alpha = 0.72f),
+                        topLeft = Offset(cloudX, cloudY),
+                        size = Size(width * 0.16f, height * 0.06f)
+                    )
                 }
             } else {
                 drawRect(
