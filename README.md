@@ -7,11 +7,12 @@
 ## 審査・試遊する方へ
 
 - 対応端末：Android 8.0（API 26）以上
-- 推奨方法：GitHub Releasesに掲載するAPKをAndroid端末へインストール
+- 推奨方法：[GitHub Releases](https://github.com/kagahina905993/FishingGame/releases)から`fishinggame-contest.apk`をAndroid端末へダウンロードしてインストール
+- コンテストAPK：デバッグ操作を非表示にした、インストール可能な非デバッグビルド
 - データ通信：ゲーム本体はインターネット権限を要求せず、学習履歴は端末内へ保存
 - 英検級：公式単語表ではなく、CEFRなどを根拠にした「英検相当推定級」
 
-APKを端末へ入れ、端末側で「不明なアプリのインストール」を一時的に許可すると試遊できます。配布元を確認できないAPKはインストールしないでください。
+APKを端末へ入れ、端末側で「不明なアプリのインストール」を一時的に許可すると試遊できます。Google Play配布ではないためAndroidの警告が表示されます。リポジトリ所有者とダウンロード元を確認してからインストールしてください。
 
 ## 現在の主な機能
 
@@ -23,7 +24,7 @@ APKを端末へ入れ、端末側で「不明なアプリのインストール�
 - 魚ごとの距離・テンション・捕獲・逃走
 - 捕獲した魚の図鑑記録
 - Roomを使った回答履歴、復習、苦手単語、習得状態の端末内保存
-- HIT前の水中食いつき演出と、投入・着水・捕獲時の効果音
+- HIT前の水中食いつき演出と、投入・着水・不正解・リール停止・合計表示・捕獲時の効果音
 - 渓流ステージと、イワシ・アジ・マグロが出現する海ステージ
 
 詳しい実装状況は[HANDOFF_MEMO.md](HANDOFF_MEMO.md)と[PROJECT_STATUS.md](PROJECT_STATUS.md)を参照してください。
@@ -42,13 +43,14 @@ APKを端末へ入れ、端末側で「不明なアプリのインストール�
 ```bash
 git clone https://github.com/kagahina905993/FishingGame.git
 cd FishingGame
-./gradlew testDebugUnitTest assembleDebug
+./gradlew testDebugUnitTest assembleDebug assembleContest
 ```
 
 生成されるAPK：
 
 ```text
 app/build/outputs/apk/debug/app-debug.apk
+app/build/outputs/apk/contest/app-contest.apk
 ```
 
 Android Studioではリポジトリを開き、Gradle同期後にAndroid 8.0以上の実機またはエミュレーターを選択して実行できます。
@@ -59,15 +61,16 @@ GitHub Actionsはpush、pull request、手動実行時に次を行います。
 
 1. 単語・文章問題の監査
 2. ローカルユニットテスト
-3. デバッグAPKの生成
-4. APKをActions artifactとして保存
+3. 開発用Debug APKと、デバッグ操作のないContest APKの生成
+4. Contest APKをActions artifactとして保存
+5. `contest-v*`タグではContest APKをGitHub Releasesへ公開
 
-Actions artifactは開発確認用です。コンテストへ提出する固定版は、バージョンを付けたGitHub ReleaseのAPKを使用します。
+通常のpushで作られるActions artifactは短期確認用です。コンテストへ提出する固定版は、`contest-v*`タグから作られたGitHub ReleaseのAPKを使用します。Contest APKは試遊を簡単にするためローカルのAndroidデバッグ署名を使用しますが、アプリ自体は非デバッグで、デバッグ操作は表示されません。Google Playなどへ正式公開する際は、提出者が管理する専用署名鍵へ切り替えます。
 
 ## 現時点の注意事項
 
 - Android専用です。GitHub Pages上で動くWebアプリやiOSアプリではありません。
-- 海ステージは1ポイントの試遊版です。釣り堀、主の解放条件、完成背景、完成チュートリアルは未完成です。
+- 海ステージは1ポイントの試遊版です。渓流の主にはコンテスト用の一時解放条件がありますが、釣り堀や学習率とつながる正式な主解放、完成背景、完成チュートリアルは未完成です。
 - 追加語彙2,934語は自動監査済みですが、人による全件最終校閲は継続中です。
 - Room計装テスト、複数端末サイズのUIテスト、実機での最終通し確認が残っています。
 

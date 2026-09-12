@@ -662,7 +662,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             typedAnswer = "",
             rotations = emptyList(),
             isCorrect = null,
-            currentFish = createRandomFishStateForPoint(pointId),
+            currentFish = createRandomFishStateForPoint(
+                pointId = pointId,
+                fishCollectionRecords = state.fishCollectionRecords
+            ),
             phase = GamePhase.HOOK,
             gameResult = null,
             isNewFishDiscovery = false,
@@ -1278,7 +1281,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             typedAnswer = "",
             rotations = emptyList(),
             isCorrect = null,
-            currentFish = createRandomFishStateForPoint(pointId),
+            currentFish = createRandomFishStateForPoint(
+                pointId = pointId,
+                fishCollectionRecords = state.fishCollectionRecords
+            ),
             phase = GamePhase.HOOK,
             gameResult = null,
             isNewFishDiscovery = false,

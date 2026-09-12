@@ -16,8 +16,18 @@ import androidx.compose.ui.unit.dp
 fun FishingPointScreen(
     modifier: Modifier = Modifier,
     map: FishingMap,
+    fishCollectionRecords: Map<String, FishCollectionRecord>,
     onSelectPoint: (String) -> Unit
 ) {
+    val nonLordFishes = nonLordFishesForMap(map.id)
+    val caughtNonLordFishCount = caughtNonLordFishCountForMap(
+        mapId = map.id,
+        fishCollectionRecords = fishCollectionRecords
+    )
+    val lordIsUnlocked = isMapLordUnlocked(
+        mapId = map.id,
+        fishCollectionRecords = fishCollectionRecords
+    )
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -39,8 +49,7 @@ fun FishingPointScreen(
                     StreamDiorama(
                         environment = map.environment,
                         showBobber = true,
-                        showFish = true,
-                        fish = fishesForPoint(point.id).firstOrNull()
+                        showFish = false
                     )
                     Text(
                         text = point.name,
@@ -49,8 +58,37 @@ fun FishingPointScreen(
                     Text(text = point.description)
                     Text(
                         text = "確認されている魚：" + point.fishSpawns
-                            .joinToString("・") { it.fishName }
+                            .joinToString("・") { spawn ->
+                                if (
+                                    CONTEST_LORD_UNLOCK_ENABLED &&
+                                    !lordIsUnlocked &&
+                                    spawn.fishName == point.lordFishName
+                                ) {
+                                    "？？？（主）"
+                                } else {
+                                    spawn.fishName
+                                }
+                            }
                     )
+                    if (
+                        CONTEST_LORD_UNLOCK_ENABLED &&
+                        point.lordFishName != null
+                    ) {
+                        Text(
+                            text = if (lordIsUnlocked) {
+                                "主が現れるようになった！"
+                            } else {
+                                "主の出現条件：主以外の魚を集める " +
+                                    "$caughtNonLordFishCount / " +
+                                    "${nonLordFishes.size}種類"
+                            },
+                            color = if (lordIsUnlocked) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { onSelectPoint(point.id) }

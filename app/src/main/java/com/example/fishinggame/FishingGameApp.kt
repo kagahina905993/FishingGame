@@ -131,6 +131,8 @@ fun FishingGameApp(gameViewModel: GameViewModel) {
                     FishingPointScreen(
                         modifier = scrollableScreenModifier,
                         map = map,
+                        fishCollectionRecords =
+                            state.fishCollectionRecords,
                         onSelectPoint =
                             gameViewModel::selectFishingPoint
                     )

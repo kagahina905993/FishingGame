@@ -3,11 +3,12 @@ name: Android CI
 on:
   push:
     branches: [main]
+    tags: ["contest-v*"]
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test-and-build:
@@ -27,13 +28,27 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Test and build debug APK
-        run: ./gradlew testDebugUnitTest assembleDebug
+      - name: Test and build APKs
+        run: ./gradlew testDebugUnitTest assembleDebug assembleContest
 
-      - name: Upload debug APK
+      - name: Upload contest APK
         uses: actions/upload-artifact@v7
         with:
-          name: fishinggame-debug-${{ github.sha }}
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: fishinggame-contest-${{ github.sha }}
+          path: app/build/outputs/apk/contest/app-contest.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish contest APK to GitHub Releases
+        if: startsWith(github.ref, 'refs/tags/contest-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/contest/app-contest.apk fishinggame-contest.apk
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" fishinggame-contest.apk --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" fishinggame-contest.apk \
+              --title "FishingGame contest build $GITHUB_REF_NAME" \
+              --notes "Android 8.0以上向けのコンテスト試遊用APKです。デバッグ操作は表示されません。"
+          fi

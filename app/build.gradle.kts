@@ -33,6 +33,12 @@ android {
                 enable = false
             }
         }
+        create("contest") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            versionNameSuffix = "-contest"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

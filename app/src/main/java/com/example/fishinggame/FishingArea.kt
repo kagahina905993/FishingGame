@@ -34,6 +34,9 @@ const val SUNLIT_SHALLOWS_POINT_ID = "sunlit_shallows"
 const val OPEN_SEA_MAP_ID = "open_sea"
 const val OFFSHORE_CURRENT_POINT_ID = "offshore_current"
 
+// コンテスト試遊版だけで使う簡易的な主解放ルール。
+const val CONTEST_LORD_UNLOCK_ENABLED = true
+
 val fishingMaps = listOf(
     FishingMap(
         id = FOOTHILL_STREAM_MAP_ID,
@@ -98,6 +101,39 @@ fun isFishingAreaLord(fishName: String): Boolean =
 fun pointsForMap(mapId: String): List<FishingPoint> =
     fishingPoints.filter { it.mapId == mapId }
 
+fun lordFishNamesForMap(mapId: String): Set<String> =
+    pointsForMap(mapId).mapNotNullTo(mutableSetOf()) { it.lordFishName }
+
+fun nonLordFishesForMap(mapId: String): List<Fish> {
+    val lordFishNames = lordFishNamesForMap(mapId)
+    val fishNames = pointsForMap(mapId)
+        .flatMapTo(mutableSetOf()) { point ->
+            point.fishSpawns.map { it.fishName }
+        }
+    return fishes.filter { fish ->
+        fish.name in fishNames && fish.name !in lordFishNames
+    }
+}
+
+fun caughtNonLordFishCountForMap(
+    mapId: String,
+    fishCollectionRecords: Map<String, FishCollectionRecord>
+): Int = nonLordFishesForMap(mapId).count { fish ->
+    (fishCollectionRecords[fish.name]?.caughtCount ?: 0) > 0
+}
+
+fun isMapLordUnlocked(
+    mapId: String,
+    fishCollectionRecords: Map<String, FishCollectionRecord>
+): Boolean {
+    val nonLordFishes = nonLordFishesForMap(mapId)
+    return lordFishNamesForMap(mapId).isNotEmpty() &&
+        nonLordFishes.isNotEmpty() &&
+        nonLordFishes.all { fish ->
+            (fishCollectionRecords[fish.name]?.caughtCount ?: 0) > 0
+        }
+}
+
 fun fishesForPoint(pointId: String): List<Fish> {
     val point = findFishingPoint(pointId) ?: return emptyList()
     val fishNames = point.fishSpawns.map { it.fishName }.toSet()
@@ -106,12 +142,31 @@ fun fishesForPoint(pointId: String): List<Fish> {
 
 fun selectRandomFishForPoint(
     pointId: String,
+    fishCollectionRecords: Map<String, FishCollectionRecord> = emptyMap(),
     random: Random = Random.Default
 ): Fish {
     val point = requireNotNull(findFishingPoint(pointId)) {
         "釣りポイントが見つかりません: $pointId"
     }
-    val candidates = point.fishSpawns.mapNotNull { spawn ->
+    val lordFishName = point.lordFishName
+    val lordIsUnlocked = isMapLordUnlocked(
+        mapId = point.mapId,
+        fishCollectionRecords = fishCollectionRecords
+    )
+    val lordHasBeenCaught = lordFishName != null &&
+        (fishCollectionRecords[lordFishName]?.caughtCount ?: 0) > 0
+    val eligibleSpawns = when {
+        !CONTEST_LORD_UNLOCK_ENABLED -> point.fishSpawns
+        lordFishName == null -> point.fishSpawns
+        !lordIsUnlocked -> point.fishSpawns.filterNot {
+            it.fishName == lordFishName
+        }
+        !lordHasBeenCaught -> point.fishSpawns.filter {
+            it.fishName == lordFishName
+        }
+        else -> point.fishSpawns
+    }
+    val candidates = eligibleSpawns.mapNotNull { spawn ->
         fishes.firstOrNull { it.name == spawn.fishName }
             ?.let { fish -> fish to spawn.weight.coerceAtLeast(1) }
     }
@@ -132,8 +187,13 @@ fun selectRandomFishForPoint(
 
 fun createRandomFishStateForPoint(
     pointId: String,
+    fishCollectionRecords: Map<String, FishCollectionRecord> = emptyMap(),
     random: Random = Random.Default
 ): FishState = createFishState(
-    fish = selectRandomFishForPoint(pointId, random),
+    fish = selectRandomFishForPoint(
+        pointId = pointId,
+        fishCollectionRecords = fishCollectionRecords,
+        random = random
+    ),
     random = random
 )

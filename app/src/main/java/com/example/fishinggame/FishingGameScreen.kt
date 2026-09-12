@@ -47,6 +47,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -122,6 +123,9 @@ fun FishingGameScreen(
     var previousIncorrectCount by remember {
         mutableStateOf(state.incorrectAnswerCount)
     }
+    var lastPlayedWrongAnswerCount by remember {
+        mutableIntStateOf(state.incorrectAnswerCount)
+    }
     var previousSkippedCount by remember {
         mutableStateOf(state.skippedQuestionCount)
     }
@@ -130,6 +134,25 @@ fun FishingGameScreen(
     }
     val applicationContext = LocalContext.current.applicationContext
     val gameScreenScrollState = rememberScrollState()
+
+    LaunchedEffect(state.incorrectAnswerCount) {
+        val shouldPlay =
+            state.incorrectAnswerCount > lastPlayedWrongAnswerCount
+        lastPlayedWrongAnswerCount = state.incorrectAnswerCount
+        if (!shouldPlay) {
+            return@LaunchedEffect
+        }
+        val player = MediaPlayer.create(
+            applicationContext,
+            R.raw.wrong_answer
+        ) ?: return@LaunchedEffect
+        try {
+            player.start()
+            delay((player.duration + 100L).coerceAtLeast(100L))
+        } finally {
+            player.release()
+        }
+    }
 
     LaunchedEffect(
         state.gameResult,

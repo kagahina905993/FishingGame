@@ -17,7 +17,7 @@ class FishingAreaTest {
     }
 
     @Test
-    fun sunlitShallows_spawnsOnlyConfiguredFish() {
+    fun sunlitShallows_excludesLordBeforeOtherFishAreCaught() {
         val availableFish = fishesForPoint(SUNLIT_SHALLOWS_POINT_ID)
         val configuredFishNames = setOf(
             "カワムツ",
@@ -26,6 +26,7 @@ class FishingAreaTest {
             "鯉",
             "錦鯉"
         )
+        val nonLordFishNames = configuredFishNames - "錦鯉"
         val selectedFishNames = mutableSetOf<String>()
 
         assertEquals(configuredFishNames, availableFish.map { it.name }.toSet())
@@ -34,10 +35,60 @@ class FishingAreaTest {
                 pointId = SUNLIT_SHALLOWS_POINT_ID,
                 random = Random(seed)
             )
-            assertTrue(selected.name in configuredFishNames)
+            assertTrue(selected.name in nonLordFishNames)
             selectedFishNames += selected.name
         }
-        assertEquals(configuredFishNames, selectedFishNames)
+        assertEquals(nonLordFishNames, selectedFishNames)
+    }
+
+    @Test
+    fun sunlitShallows_guaranteesUncaughtLordAfterOtherFishAreCaught() {
+        val completedNonLordRecords = nonLordFishesForMap(
+            FOOTHILL_STREAM_MAP_ID
+        ).associate { fish ->
+            fish.name to FishCollectionRecord(caughtCount = 1)
+        }
+
+        assertEquals(4, completedNonLordRecords.size)
+        assertTrue(
+            isMapLordUnlocked(
+                mapId = FOOTHILL_STREAM_MAP_ID,
+                fishCollectionRecords = completedNonLordRecords
+            )
+        )
+        repeat(20) { seed ->
+            assertEquals(
+                "錦鯉",
+                selectRandomFishForPoint(
+                    pointId = SUNLIT_SHALLOWS_POINT_ID,
+                    fishCollectionRecords = completedNonLordRecords,
+                    random = Random(seed)
+                ).name
+            )
+        }
+    }
+
+    @Test
+    fun sunlitShallows_returnsToConfiguredPoolAfterLordIsCaught() {
+        val completedRecords = fishesForPoint(
+            SUNLIT_SHALLOWS_POINT_ID
+        ).associate { fish ->
+            fish.name to FishCollectionRecord(caughtCount = 1)
+        }
+        val selectedFishNames = mutableSetOf<String>()
+
+        repeat(100) { seed ->
+            selectedFishNames += selectRandomFishForPoint(
+                pointId = SUNLIT_SHALLOWS_POINT_ID,
+                fishCollectionRecords = completedRecords,
+                random = Random(seed)
+            ).name
+        }
+        assertEquals(
+            fishesForPoint(SUNLIT_SHALLOWS_POINT_ID)
+                .mapTo(mutableSetOf()) { it.name },
+            selectedFishNames
+        )
     }
 
     @Test

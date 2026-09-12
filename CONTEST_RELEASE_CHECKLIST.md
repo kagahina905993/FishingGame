@@ -6,6 +6,7 @@
 - [x] 審査員向け`README.md`がある
 - [x] push・pull request・手動実行でテストとAPK生成を行うGitHub Actionsがある
 - [x] GitHub Actionsが実際に成功した
+- [ ] `contest-v*`タグでデバッグ操作のないContest APKをGitHub Releasesへ公開した
 - [x] 端末固有の`.idea`設定、`local.properties`、署名情報を含めていない
 - [ ] アプリ本体のソースコードライセンスを決めた
 
@@ -23,6 +24,7 @@
 - [ ] `applicationId`を`com.example.fishinggame`から正式なIDへ変更した
 - [ ] `versionCode`と`versionName`を提出版に合わせた
 - [ ] 提出者が管理する署名鍵でrelease APKを署名した
+- [x] GitHub試遊用に、非デバッグのContest APKを生成できる
 - [ ] 署名鍵・パスワード・`keystore.properties`をGitHubへ含めていない
 - [ ] Android 8.0以上の実機へAPKを新規インストールできた
 - [ ] 初回起動から捕獲・図鑑保存まで通して確認した

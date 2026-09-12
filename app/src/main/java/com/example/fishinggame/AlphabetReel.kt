@@ -1,5 +1,7 @@
 package com.example.fishinggame
 
+import android.media.AudioAttributes
+import android.media.SoundPool
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -23,9 +25,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +41,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -120,6 +128,44 @@ internal fun AlphabetReelPanel(
     showCorrectStopFeedback: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val reelSoundPool = remember {
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+    }
+    var stopSoundId by remember { mutableIntStateOf(0) }
+    var totalSoundId by remember { mutableIntStateOf(0) }
+    var loadedSoundIds by remember { mutableStateOf(emptySet<Int>()) }
+    DisposableEffect(reelSoundPool) {
+        reelSoundPool.setOnLoadCompleteListener { _, sampleId, status ->
+            if (status == 0) {
+                loadedSoundIds = loadedSoundIds + sampleId
+            }
+        }
+        stopSoundId = reelSoundPool.load(
+            /* context = */ context,
+            /* resId = */ R.raw.reel_stop,
+            /* priority = */ 1
+        )
+        totalSoundId = reelSoundPool.load(
+            /* context = */ context,
+            /* resId = */ R.raw.reel_total,
+            /* priority = */ 2
+        )
+        onDispose {
+            reelSoundPool.setOnLoadCompleteListener(null)
+            reelSoundPool.release()
+        }
+    }
+    val currentStopSoundId by rememberUpdatedState(stopSoundId)
+    val currentTotalSoundId by rememberUpdatedState(totalSoundId)
+    val currentLoadedSoundIds by rememberUpdatedState(loadedSoundIds)
     val letters = typedAnswer.uppercase().toList()
     val reelCount = minOf(letters.size, rotations.size)
     val animationSchedule = reelAnimationSchedule(
@@ -135,12 +181,55 @@ internal fun AlphabetReelPanel(
         wholeAnswerIsCorrect,
         reelCount
     ) {
+        if (showCorrectStopFeedback && wholeAnswerIsCorrect) {
+            var previousStopMillis = 0
+            var activeStopStreamId = 0
+            animationSchedule.forEach { timing ->
+                delay(
+                    (timing.durationMillis - previousStopMillis)
+                        .coerceAtLeast(0)
+                        .toLong()
+                )
+                if (currentStopSoundId in currentLoadedSoundIds) {
+                    if (activeStopStreamId != 0) {
+                        reelSoundPool.stop(activeStopStreamId)
+                    }
+                    activeStopStreamId = reelSoundPool.play(
+                        /* soundID = */ currentStopSoundId,
+                        /* leftVolume = */ 1f,
+                        /* rightVolume = */ 1f,
+                        /* priority = */ 1,
+                        /* loop = */ 0,
+                        /* rate = */ 1f
+                    )
+                }
+                previousStopMillis = timing.durationMillis
+            }
+        }
+    }
+
+    LaunchedEffect(
+        animationRunId,
+        showCorrectStopFeedback,
+        wholeAnswerIsCorrect,
+        reelCount
+    ) {
         wholeAnswerPulse.snapTo(0f)
         if (showCorrectStopFeedback && wholeAnswerIsCorrect) {
             delay(
                 reelAnimationDurationMillis(rotations.take(reelCount)) +
                     CORRECT_REEL_FEEDBACK_MILLIS
             )
+            if (currentTotalSoundId in currentLoadedSoundIds) {
+                reelSoundPool.play(
+                    /* soundID = */ currentTotalSoundId,
+                    /* leftVolume = */ 1f,
+                    /* rightVolume = */ 1f,
+                    /* priority = */ 2,
+                    /* loop = */ 0,
+                    /* rate = */ 1f
+                )
+            }
             wholeAnswerPulse.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 250)
