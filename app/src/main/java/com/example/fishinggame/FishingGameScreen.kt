@@ -72,7 +72,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
@@ -105,9 +104,6 @@ fun FishingGameScreen(
     onCycleDebugFish: () -> Unit,
     onCatchDebugFish: () -> Unit
 ) {
-    var showFullMeaning by remember(word.english) {
-        mutableStateOf(false)
-    }
     var showDebugControls by remember {
         mutableStateOf(false)
     }
@@ -273,11 +269,7 @@ fun FishingGameScreen(
         }
     }
 
-    val displayedMeaning = if (showFullMeaning) {
-        word.japanese
-    } else {
-        word.questionMeaning
-    }
+    val displayedMeaning = word.questionMeaning
     val displayedPartOfSpeech = word.questionPartOfSpeech
     val debugControlsAvailable = BuildConfig.DEBUG &&
         state.phase == GamePhase.INPUT
@@ -325,16 +317,12 @@ fun FishingGameScreen(
                 word = word,
                 displayedMeaning = displayedMeaning,
                 displayedPartOfSpeech = displayedPartOfSpeech,
-                showFullMeaning = showFullMeaning,
                 feedback = feedback,
                 onAnswerChanged = onAnswerChanged,
                 onSubmitAnswer = onSubmitAnswer,
                 onSelectChoice = onSelectChoice,
                 onSkipQuestion = onSkipQuestion,
-                onQuestionTimerTick = onQuestionTimerTick,
-                onToggleFullMeaning = {
-                    showFullMeaning = !showFullMeaning
-                }
+                onQuestionTimerTick = onQuestionTimerTick
             )
         } else {
             AnimatedVisibility(
@@ -813,16 +801,13 @@ private fun QuestionPanel(
     word: Word,
     displayedMeaning: String,
     displayedPartOfSpeech: String?,
-    showFullMeaning: Boolean,
     feedback: GameFeedback?,
     onAnswerChanged: (String) -> Unit,
     onSubmitAnswer: () -> Unit,
     onSelectChoice: (String) -> Unit,
     onSkipQuestion: () -> Unit,
-    onQuestionTimerTick: (Long, Long) -> Unit,
-    onToggleFullMeaning: () -> Unit
+    onQuestionTimerTick: (Long, Long) -> Unit
 ) {
-    val fullMeaningScrollState = rememberScrollState()
     val shakeOffset = remember { Animatable(0f) }
     val questionEntrance = remember { Animatable(0f) }
     val focusRequester = remember { FocusRequester() }
@@ -994,17 +979,9 @@ private fun QuestionPanel(
             } else {
                 Text(
                     text = displayedMeaning,
-                    modifier = if (showFullMeaning) {
-                        Modifier
-                            .heightIn(max = 132.dp)
-                            .verticalScroll(fullMeaningScrollState)
-                    } else {
-                        Modifier
-                    },
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
-                    maxLines = if (showFullMeaning) Int.MAX_VALUE else 3,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 3
                 )
             }
 
@@ -1013,7 +990,7 @@ private fun QuestionPanel(
                     text = "${word.english.length}文字",
                     style = MaterialTheme.typography.labelMedium
                 )
-                if (!showFullMeaning && displayedPartOfSpeech != null) {
+                if (displayedPartOfSpeech != null) {
                     Text(
                         text = displayedPartOfSpeech,
                         style = MaterialTheme.typography.labelMedium
@@ -1028,21 +1005,19 @@ private fun QuestionPanel(
                 }
             }
 
-            if (!state.currentQuestionUsesSentence &&
-                !showFullMeaning && word.quizHint != null
-            ) {
+            if (!state.currentQuestionUsesSentence && word.quizHint != null) {
                 Text(
                     text = "補足：${word.quizHint}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
             if (!state.currentQuestionUsesSentence &&
-                !showFullMeaning && state.questionMeaningCollisionCount > 1
+                state.questionMeaningCollisionCount > 1
             ) {
                 Text(
                     text = "同じ代表意味の単語が" +
                         "${state.questionMeaningCollisionCount}語あります。" +
-                        "文字数や辞書全文も確認してください。",
+                        "文字数と品詞を確認してください。",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -1088,24 +1063,6 @@ private fun QuestionPanel(
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
-            }
-
-            if (!state.currentQuestionUsesSentence && (
-                    word.questionMeaning != word.japanese ||
-                        word.japanese.length > 120
-                    )
-            ) {
-                TextButton(onClick = onToggleFullMeaning) {
-                    Text(
-                        text = if (showFullMeaning) {
-                            "折りたたむ"
-                        } else if (word.questionMeaning != word.japanese) {
-                            "辞書全文を表示"
-                        } else {
-                            "全文を表示"
-                        }
-                    )
-                }
             }
 
             if (isMultipleChoice) {

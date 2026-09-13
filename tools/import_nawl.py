@@ -33,6 +33,7 @@ MEANING_OVERRIDES = {
     "bracket": "角括弧；支え金具",
     "calculation": "計算；算定",
     "cheer": "歓声を上げる；励ます",
+    "millimeter": "ミリメートル",
     "syntactic": "構文上の",
 }
 
@@ -48,7 +49,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--words", type=Path, required=True)
     parser.add_argument("--nawl-csv", type=Path, required=True)
     parser.add_argument("--nawl-html", type=Path, required=True)
-    parser.add_argument("--ejdict-src", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -78,20 +78,6 @@ def load_nawl_metadata(path: Path) -> dict[str, dict[str, str]]:
     return metadata
 
 
-def load_ejdict(directory: Path) -> dict[str, str]:
-    meanings = {}
-    for path in sorted(directory.glob("*.txt")):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if "\t" not in line:
-                continue
-            headwords, meaning = line.split("\t", 1)
-            for headword in headwords.split(", "):
-                normalized = re.sub(r"\[[^]]*]$", "", headword).strip().lower()
-                if normalized and normalized not in meanings:
-                    meanings[normalized] = meaning.strip()
-    return meanings
-
-
 def main() -> None:
     args = parse_args()
     all_words = json.loads(args.words.read_text(encoding="utf-8"))
@@ -108,7 +94,6 @@ def main() -> None:
         raise ValueError(f"Expected 2809 NGSL words, got {len(words)}")
     ranks = load_nawl_ranks(args.nawl_html)
     metadata = load_nawl_metadata(args.nawl_csv)
-    dictionary = load_ejdict(args.ejdict_src)
 
     existing = {word["english"].lower() for word in words}
     additions = []
@@ -125,7 +110,6 @@ def main() -> None:
             english,
             details["japanese"],
         )
-        dictionary_meaning = dictionary.get(english)
         part_of_speech = POS_NAMES.get(source_pos)
         if not part_of_speech:
             raise ValueError(f"Unsupported part of speech: {english} ({source_pos})")
@@ -140,7 +124,9 @@ def main() -> None:
                     if english in MEANING_OVERRIDES
                     else "NAWL 1.2 Japanese metadata"
                 ),
-                "japanese": dictionary_meaning or short_meaning,
+                # Keep the compatibility field short. The app no longer ships
+                # or displays the source dictionary body.
+                "japanese": short_meaning,
                 "ngslRank": None,
                 "level": 6 if lower_band else 7,
                 "schoolGrade": 11 if lower_band else 12,
@@ -148,11 +134,7 @@ def main() -> None:
                 "partOfSpeech": part_of_speech,
                 "sfi": None,
                 "frequencyPerMillion": None,
-                "translationSource": (
-                    "NAWL 1.2 / EJDict-hand"
-                    if dictionary_meaning
-                    else "NAWL 1.2"
-                ),
+                "translationSource": "NAWL 1.2",
                 "wordList": "NAWL_1_2",
                 "sourceRank": source_rank,
             }

@@ -30,7 +30,7 @@ Changes made in this project:
 
 - converted the source lists to the app's JSON schema;
 - combined NGSL and NAWL while retaining separate source identifiers and ranks;
-- added Japanese dictionary entries and imported short quiz meanings and parts of speech;
+- imported short Japanese quiz meanings and parts of speech;
 - manually corrected clear source errors and disambiguated colliding quiz prompts;
 - assigned app-specific school-grade, Eiken-grade, and game-level categories.
 
@@ -41,17 +41,18 @@ No endorsement by the original authors or licensors is implied.
 
 ## EJDict-hand
 
-Long-form Japanese dictionary entries are taken from EJDict-hand.
+EJDict-hand is used only to validate candidate meanings during vocabulary
+generation. Its long-form entries are not included in the packaged dataset or
+shown in the app.
 
 - Maintainer: kujirahand
 - Source: https://github.com/kujirahand/EJDict
-- Revision used for the NAWL import: `5e1a630bfabb2791a78d14e4e356d85bb6437e34`
+- Revision used for vocabulary validation: `5e1a630bfabb2791a78d14e4e356d85bb6437e34`
 - License: CC0 / Public Domain
 
 CC0 permits copying, modification, and redistribution, including commercially.
 Attribution is retained here as a courtesy and for source traceability.
-The underlying EJDict-hand entries remain available from their source under CC0;
-the CC BY-SA notice for the combined dataset does not remove that status.
+The underlying EJDict-hand entries remain available from their source under CC0.
 No endorsement by the maintainer is implied.
 
 ## Open vocabulary extension v1

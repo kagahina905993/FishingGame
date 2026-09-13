@@ -78,7 +78,9 @@ def main() -> None:
         if basis not in VALID_EIKEN_BASIS:
             errors.append(f"invalid Eiken classification basis: {english} ({basis})")
         if not word.get("japanese"):
-            errors.append(f"missing Japanese dictionary text: {english}")
+            errors.append(f"missing Japanese compatibility meaning: {english}")
+        elif word.get("japanese") != word.get("quizMeaning"):
+            errors.append(f"long or mismatched Japanese text: {english}")
         by_source[word.get("wordList")].append(word)
 
     for source, expected_count in EXPECTED_SOURCE_COUNTS.items():

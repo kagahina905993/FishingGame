@@ -158,6 +158,9 @@ def main() -> None:
         else:
             word["quizMeaning"] = entry["meaning"]
             word["quizSource"] = "NGSL 1.2 Japanese Learning Dictionary"
+        # `japanese` remains only as a backwards-compatible short-meaning
+        # field. Do not restore a long dictionary body here.
+        word["japanese"] = word["quizMeaning"]
         word["partOfSpeech"] = entry["partOfSpeech"]
         if not word.get("quizPartOfSpeech"):
             word["quizPartOfSpeech"] = entry["partOfSpeech"]

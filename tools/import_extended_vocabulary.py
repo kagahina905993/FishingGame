@@ -556,7 +556,9 @@ def main() -> None:
             "quizPartOfSpeech": item["quizPartOfSpeech"],
             "quizHint": None,
             "quizSource": quiz_source,
-            "japanese": item["japanese"],
+            # Keep only the reviewed quiz prompt in packaged data. EJDict is
+            # used above for semantic validation, not distributed as a body.
+            "japanese": item["quizMeaning"],
             "ngslRank": None,
             "level": level,
             "schoolGrade": school_grade,
@@ -613,7 +615,7 @@ def main() -> None:
             "quizPartOfSpeech": quiz_pos,
             "quizHint": None,
             "quizSource": "EJDict-hand / CEFR-J",
-            "japanese": dictionary_text,
+            "japanese": item["quizMeaning"],
             "ngslRank": None,
             "level": level,
             "schoolGrade": school_grade,
