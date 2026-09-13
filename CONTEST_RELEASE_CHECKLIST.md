@@ -6,7 +6,7 @@
 - [x] 審査員向け`README.md`がある
 - [x] push・pull request・手動実行でテストとAPK生成を行うGitHub Actionsがある
 - [x] GitHub Actionsが実際に成功した
-- [x] `contest-v0.1.1`タグでデバッグ操作のない最新Contest APKをGitHub Releasesへ公開する設定がある
+- [x] `contest-v0.1.1`タグでデバッグ操作のない最新Contest APKをGitHub Releasesへ公開した
 - [x] 端末固有の`.idea`設定、`local.properties`、署名情報を含めていない
 - [ ] アプリ本体のソースコードライセンスを決めた
 
