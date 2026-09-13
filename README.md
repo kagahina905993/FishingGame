@@ -7,7 +7,7 @@
 ## 審査・試遊する方へ
 
 - 対応端末：Android 8.0（API 26）以上
-- 推奨方法：[現在のコンテスト試遊版 v0.1.0](https://github.com/kagahina905993/FishingGame/releases/tag/contest-v0.1.0)から`fishinggame-contest.apk`をAndroid端末へダウンロードしてインストール
+- 推奨方法：[現在のコンテスト試遊版 v0.1.1](https://github.com/kagahina905993/FishingGame/releases/tag/contest-v0.1.1)から`fishinggame-contest.apk`をAndroid端末へダウンロードしてインストール
 - コンテストAPK：デバッグ操作を非表示にした、インストール可能な非デバッグビルド
 - データ通信：ゲーム本体はインターネット権限を要求せず、学習履歴は端末内へ保存
 - 英検級：公式単語表ではなく、CEFRなどを根拠にした「英検相当推定級」
