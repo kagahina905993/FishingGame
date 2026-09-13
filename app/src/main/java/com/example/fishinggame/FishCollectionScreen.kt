@@ -49,7 +49,7 @@ fun FishCollectionScreen(
             style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = "麓の渓流で発見：${state.availableCaughtSpeciesCount}" +
+            text = "現在の釣り場で発見：${state.availableCaughtSpeciesCount}" +
                 " / ${currentlyAvailableFishes.size}種類"
         )
         FishRarity.entries.forEach { rarity ->

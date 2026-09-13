@@ -267,7 +267,7 @@ private fun FishingGameBottomBar(
         }
 
         GamePhase.INPUT -> {
-            if (!isKeyboardVisible) {
+            if (shouldShowInputBottomBar(isKeyboardVisible)) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -317,6 +317,9 @@ private fun FishingGameBottomBar(
         GamePhase.LICENSES -> Unit
     }
 }
+
+internal fun shouldShowInputBottomBar(isKeyboardVisible: Boolean): Boolean =
+    !isKeyboardVisible
 
 @Composable
 private fun MessageScreen(

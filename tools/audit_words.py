@@ -11,7 +11,7 @@ from pathlib import Path
 EXPECTED_SOURCE_COUNTS = {
     "NGSL_1_2": 2809,
     "NAWL_1_2": 957,
-    "OPEN_VOCAB_EXTENDED_V1": 2934,
+    "OPEN_VOCAB_EXTENDED_V1": 2974,
 }
 ENGLISH_WORD = re.compile(r"^[a-z]+$")
 VALID_EIKEN_BASIS = {

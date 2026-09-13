@@ -37,6 +37,9 @@ python3 tools/audit_questions.py \
   app/src/main/assets/question_content.json
 ```
 
-The expected result is 6,700 unique words: 2,809 NGSL, 957 NAWL, and
-2,934 extended words. Do not raise the target merely to reach a round number;
-new rows must pass the same semantic and licensing checks first.
+The expected result is 6,740 unique words: 2,809 NGSL, 957 NAWL, and
+2,974 extended words. Of the extended rows, 2,956 pass the strict WordNet
+intersection and 18 A1 foundation words are explicitly listed and manually
+reviewed in the importer against CEFR-J and EJDict-hand. Do not raise the
+target merely to reach a round number; new rows must pass the same semantic
+and licensing checks first.

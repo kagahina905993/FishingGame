@@ -56,11 +56,14 @@ No endorsement by the maintainer is implied.
 
 ## Open vocabulary extension v1
 
-The project adds 2,934 headwords under the source identifier
+The project adds 2,974 headwords under the source identifier
 `OPEN_VOCAB_EXTENDED_V1`. They are not copied from an unofficial Eiken list.
-The importer intersects openly licensed lexical resources and retains an entry
-only when its English part of speech and Japanese WordNet concept match and the
-Japanese expression also occurs in EJDict-hand. The short prompt, app rank,
+For 2,956 entries, the importer intersects openly licensed lexical resources
+and retains an entry only when its English part of speech and Japanese WordNet
+concept match and the Japanese expression also occurs in EJDict-hand. The
+remaining 18 A1 foundation entries are explicitly listed in the importer and
+were manually checked against CEFR-J for headword and part of speech and
+against EJDict-hand for the Japanese definition. The short prompt, app rank,
 course level, and Eiken-equivalent band are project adaptations.
 
 - WortUniversum English Vocabulary Database

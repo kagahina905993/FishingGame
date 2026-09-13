@@ -34,11 +34,13 @@ No endorsement by its maintainer is implied.
 
 OPEN VOCABULARY EXTENSION V1
 
-The additional 2,934 headwords were selected by this project by intersecting
-the following openly licensed resources. Entries were retained only when an
-English part of speech and a Japanese WordNet concept matched and the same
-Japanese expression was present in EJDict-hand. The resulting selection,
-short quiz prompts, ranks, and Eiken-equivalent bands are project adaptations.
+The additional 2,974 headwords were selected from the following openly
+licensed resources. For 2,956 entries, an English part of speech and a
+Japanese WordNet concept matched and the same Japanese expression was present
+in EJDict-hand. The remaining 18 A1 foundation entries were manually checked
+against CEFR-J for headword and part of speech and against EJDict-hand for the
+Japanese definition. The resulting selection, short quiz prompts, ranks, and
+Eiken-equivalent bands are project adaptations.
 
 WortUniversum English Vocabulary Database
 Source: https://huggingface.co/datasets/cstr/grundwortschatz-voc-en

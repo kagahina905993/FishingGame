@@ -51,9 +51,9 @@ fun LicensesScreen(
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = "このアプリの単語データ6,700語は、" +
+            text = "このアプリの単語データ6,740語は、" +
                 "NGSL 1.2（2,809語）、NAWL 1.2（957語）、" +
-                "公開語彙資料を照合した追加2,934語で構成しています。"
+                "公開語彙資料を照合・個別確認した追加2,974語で構成しています。"
         )
         Text(
             text = "文章穴埋め問題と文章4択の英文・和文・解説は、" +

@@ -19,6 +19,7 @@ from pathlib import Path
 
 
 SOURCE_CODE = "OPEN_VOCAB_EXTENDED_V1"
+STRICT_REVIEWED_TOTAL = 6722
 ENGLISH_WORD = re.compile(r"^[a-z]+$")
 JAPANESE_TEXT = re.compile(r"[ぁ-んァ-ヶ一-龯]")
 BRACKET_LABEL = re.compile(r"《[^》]*》|〈[^〉]*〉|\([^)]*\)|（[^）]*）")
@@ -49,6 +50,63 @@ BLOCKED_WORDS = {
     "nigger", "piss", "porn", "pornography", "shit", "slut", "whore",
     "hooker", "john", "sexy",
 }
+
+# These otherwise well-sourced headwords are excluded because their generated
+# prompt would be unfair in a Japanese-to-English quiz. ``draught`` overlaps
+# heavily with ``draft`` in meaning/spelling, ``ling`` selected a rare plant
+# sense instead of the dictionary's first fish sense, and ``offence``/``vigor``
+# duplicate American/British spelling variants already in the dataset.
+QUIZ_QUALITY_EXCLUSIONS = {"draught", "ling", "offence", "vigor"}
+
+# WordNet lemmas can be terse or duplicated. Keep the meaning within the
+# concepts confirmed by both Japanese WordNet and EJDict, but present it as
+# natural Japanese for the actual quiz prompt.
+QUIZ_MEANING_OVERRIDES = {
+    "distinguished": "著名な；優秀な",
+    "fighting": "戦闘",
+    "gang": "集団；一味",
+    "hay": "干し草",
+    "hunting": "狩猟",
+    "landing": "着陸；上陸",
+    "learning": "学習；学問",
+    "marketing": "マーケティング；販売",
+    "mogul": "大立者；有力者",
+    "outskirts": "郊外；周辺",
+    "related": "関係のある",
+    "remains": "残り；遺体",
+    "rite": "宗教的な儀式",
+    "scooter": "スクーター",
+    "shipping": "発送；運送",
+    "spectacle": "光景；見せ物",
+    "suffering": "苦痛；苦悩",
+    "vigour": "精",
+}
+
+# CEFR-J A1 headwords that were absent from the strict WordNet intersection.
+# Each row was checked manually against the pinned CEFR-J and EJDict-hand
+# inputs. Keep this list small: inflected auxiliaries, proper calendar names,
+# number words, spelling variants, and prompts that would be ambiguous in a
+# Japanese-to-English quiz are intentionally excluded.
+CURATED_A1_FOUNDATION_ADDITIONS = (
+    {"english": "baseball", "quizMeaning": "野球", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "bee", "quizMeaning": "はち", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "grandpa", "quizMeaning": "おじいちゃん", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "grape", "quizMeaning": "ぶどう", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "thanks", "quizMeaning": "感謝の言葉", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "vase", "quizMeaning": "花びん", "quizPartOfSpeech": "名詞", "eiken": "5"},
+    {"english": "cartoon", "quizMeaning": "漫画；アニメ", "quizPartOfSpeech": "名詞", "eiken": "4"},
+    {"english": "haircut", "quizMeaning": "散髪；髪型", "quizPartOfSpeech": "名詞", "eiken": "4"},
+    {"english": "hometown", "quizMeaning": "故郷の町", "quizPartOfSpeech": "名詞", "eiken": "4"},
+    {"english": "rainy", "quizMeaning": "雨の；雨模様の", "quizPartOfSpeech": "形容詞", "eiken": "4"},
+    {"english": "surf", "quizMeaning": "岸に寄せる波", "quizPartOfSpeech": "名詞", "eiken": "4"},
+    {"english": "trousers", "quizMeaning": "ズボン", "quizPartOfSpeech": "名詞", "eiken": "4"},
+    {"english": "awake", "quizMeaning": "目が覚めている", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+    {"english": "broken", "quizMeaning": "壊れた；折れた", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+    {"english": "excited", "quizMeaning": "興奮した；わくわくした", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+    {"english": "exciting", "quizMeaning": "興奮させる；わくわくする", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+    {"english": "foggy", "quizMeaning": "霧のかかった", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+    {"english": "interested", "quizMeaning": "興味のある", "quizPartOfSpeech": "形容詞", "eiken": "3"},
+)
 
 EIKEN_FROM_CEFR = {
     "A1": ("5", "4", "3"),
@@ -93,7 +151,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--english-wordnet-gz", type=Path, required=True)
     parser.add_argument("--japanese-wordnet", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--target-total", type=int, default=6700)
+    parser.add_argument("--target-total", type=int, default=6740)
     return parser.parse_args()
 
 
@@ -394,7 +452,11 @@ def main() -> None:
     candidates: list[dict[str, object]] = []
     candidate_prompt_keys: set[tuple[str, str]] = set()
     for english in sorted(all_headwords - existing_english):
-        if english in BLOCKED_WORDS or len(english) <= 2:
+        if (
+            english in BLOCKED_WORDS
+            or english in QUIZ_QUALITY_EXCLUSIONS
+            or len(english) <= 2
+        ):
             continue
         dictionary_text = dictionary.get(english)
         if not dictionary_text:
@@ -427,6 +489,7 @@ def main() -> None:
             ),
             None,
         )
+        prompt = QUIZ_MEANING_OVERRIDES.get(english, prompt)
         if not prompt:
             continue
         candidate_prompt_keys.add((prompt, quiz_pos))
@@ -471,8 +534,12 @@ def main() -> None:
         key=lambda item: (-float(item["zipf"]), str(item["english"])),
     )
     requested_additions = args.target_total - len(base_words)
-    selected.extend(remaining[:max(0, requested_additions - len(selected))])
-    selected = selected[:requested_additions]
+    strict_additions_requested = min(
+        requested_additions,
+        STRICT_REVIEWED_TOTAL - len(base_words),
+    )
+    selected.extend(remaining[:max(0, strict_additions_requested - len(selected))])
+    selected = selected[:strict_additions_requested]
 
     additions: list[dict[str, object]] = []
     for source_rank, item in enumerate(selected, start=1):
@@ -513,6 +580,56 @@ def main() -> None:
         prompt_key = (addition["quizMeaning"], addition["quizPartOfSpeech"])
         if prompt_key in used_prompts:
             raise ValueError(f"ambiguous generated prompt: {prompt_key}")
+        used_prompts.add(prompt_key)
+        additions.append(addition)
+
+    curated_requested = requested_additions - len(additions)
+    curated_available = [
+        item for item in CURATED_A1_FOUNDATION_ADDITIONS
+        if str(item["english"]) not in existing_english
+    ]
+    if curated_requested > len(curated_available):
+        raise ValueError(
+            f"Only {len(base_words) + len(additions) + len(curated_available)} "
+            f"validated words available; target was {args.target_total}"
+        )
+    for item in curated_available[:curated_requested]:
+        english = str(item["english"])
+        eiken = str(item["eiken"])
+        quiz_pos = str(item["quizPartOfSpeech"])
+        profile_rows = profiles.get(english, [])
+        if not any(
+            row["cefr"] == "A1" and POS_NAMES[row["pos"]] == quiz_pos
+            for row in profile_rows
+        ):
+            raise ValueError(f"curated A1 profile mismatch: {english}")
+        dictionary_text = dictionary.get(english)
+        if not dictionary_text:
+            raise ValueError(f"curated EJDict entry missing: {english}")
+        level, school_grade = COURSE_METADATA[eiken]
+        addition = {
+            "english": english,
+            "quizMeaning": item["quizMeaning"],
+            "quizPartOfSpeech": quiz_pos,
+            "quizHint": None,
+            "quizSource": "EJDict-hand / CEFR-J",
+            "japanese": dictionary_text,
+            "ngslRank": None,
+            "level": level,
+            "schoolGrade": school_grade,
+            "eikenLevel": eiken,
+            "partOfSpeech": quiz_pos,
+            "sfi": None,
+            "frequencyPerMillion": 0,
+            "translationSource": "EJDict-hand",
+            "wordList": SOURCE_CODE,
+            "sourceRank": len(additions) + 1,
+            "estimatedCefrLevel": "A1",
+            "eikenClassificationBasis": "cefrj_foundation_split",
+        }
+        prompt_key = (addition["quizMeaning"], addition["quizPartOfSpeech"])
+        if prompt_key in used_prompts:
+            raise ValueError(f"ambiguous curated prompt: {prompt_key}")
         used_prompts.add(prompt_key)
         additions.append(addition)
 
