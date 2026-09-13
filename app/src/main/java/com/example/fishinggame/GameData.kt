@@ -261,6 +261,19 @@ data class GameUiState(
     val learningHistoryError: String? = null,
     val errorMessage: String? = null
 ) {
+    private fun availableStudyWordCount(itemIds: Set<String>): Int =
+        filterWordsForQuestionMode(
+            words = allWords.filter { it.learningItemId() in itemIds },
+            mode = questionMode,
+            sentenceWordIds = sentenceQuestionsByWordId.keys
+        ).size
+
+    val availableReviewWordCount: Int
+        get() = availableStudyWordCount(reviewLearningItemIds)
+
+    val availableWeakWordCount: Int
+        get() = availableStudyWordCount(weakLearningItemIds)
+
     val selectedMap: FishingMap?
         get() = findFishingMap(selectedMapId)
 

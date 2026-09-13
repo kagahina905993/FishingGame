@@ -153,6 +153,26 @@ class QuestionContentTest {
     }
 
     @Test
+    fun sentenceModesFilterOutWordsWithoutSentenceQuestions() {
+        assertEquals(
+            listOf(words[0]),
+            filterWordsForQuestionMode(
+                words = words,
+                mode = QuestionMode.SENTENCE_INPUT,
+                sentenceWordIds = setOf(words[0].wordId)
+            )
+        )
+        assertEquals(
+            words,
+            filterWordsForQuestionMode(
+                words = words,
+                mode = QuestionMode.MIXED,
+                sentenceWordIds = setOf(words[0].wordId)
+            )
+        )
+    }
+
+    @Test
     fun meaningChoiceOptions_preferValidDistinctCourseWords() {
         val options = buildMeaningChoiceOptions(
             target = words[0],

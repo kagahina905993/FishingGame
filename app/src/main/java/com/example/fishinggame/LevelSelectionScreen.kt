@@ -63,7 +63,8 @@ fun LevelSelectionScreen(
         }
         Text(
             text = "文章問題 ${state.sentenceQuestionsByWordId.size}語。" +
-                "未登録語は単語入力になります。復習・苦手では" +
+                "文章入力・文章4択では登録済みの文章問題だけを出題します。" +
+                "復習・苦手では" +
                 "文章4択を文章入力、意味4択を単語入力へ切り替えます。",
             style = MaterialTheme.typography.bodySmall
         )
@@ -95,21 +96,21 @@ fun LevelSelectionScreen(
         )
         Button(
             modifier = Modifier.fillMaxWidth(),
-            enabled = state.reviewLearningItemIds.isNotEmpty() &&
+            enabled = state.availableReviewWordCount > 0 &&
                 !state.isLearningHistoryLoading,
             onClick = onSelectReviewMode
         ) {
             Text(
-                text = "復習する（${state.reviewLearningItemIds.size}語）"
+                text = "復習する（${state.availableReviewWordCount}語）"
             )
         }
         OutlinedButton(
             modifier = Modifier.fillMaxWidth(),
-            enabled = state.weakLearningItemIds.isNotEmpty() &&
+            enabled = state.availableWeakWordCount > 0 &&
                 !state.isLearningHistoryLoading,
             onClick = onSelectWeakMode
         ) {
-            Text(text = "苦手単語（${state.weakLearningItemIds.size}語）")
+            Text(text = "苦手単語（${state.availableWeakWordCount}語）")
         }
         if (state.isLearningHistoryLoading) {
             Text(text = "学習履歴を更新しています…")

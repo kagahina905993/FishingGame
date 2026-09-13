@@ -1261,6 +1261,14 @@ private fun DebugGameControls(
     onCatchDebugFish: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "問題ID：" + (
+                state.currentSentenceQuestion?.questionId
+                    ?: state.word?.wordId
+                    ?: "不明"
+                ),
+            style = MaterialTheme.typography.labelSmall
+        )
         if (state.rotations.isNotEmpty()) {
             Text(
                 text = state.rotations.joinToString(" → ") +
@@ -1449,6 +1457,20 @@ private fun GameResultPanel(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
+                BattleLearningResult(state = state)
+            } else {
+                Text(
+                    text = "復習対象の問題をすべて終えました。",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = (
+                        "魚はまだ %.1f m先です。" +
+                            "今回は捕獲しておらず、図鑑にも登録していません。"
+                        ).format(fishState.currentDistance),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 BattleLearningResult(state = state)
             }
         }

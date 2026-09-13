@@ -11616,7 +11616,7 @@
     "sourceRank": 609,
     "quizMeaning": "終える；仕上げる",
     "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "名詞",
+    "quizPartOfSpeech": "動詞",
     "estimatedCefrLevel": "A1",
     "eikenClassificationBasis": "cefrj_foundation_split"
   },
@@ -29817,8 +29817,8 @@
     "wordList": "NGSL_1_2",
     "sourceRank": 1567,
     "quizMeaning": "ショット",
-    "quizSource": "NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "動詞",
+    "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
+    "quizPartOfSpeech": "名詞",
     "estimatedCefrLevel": "A2",
     "eikenClassificationBasis": "cefrj_foundation_split"
   },
@@ -35137,8 +35137,8 @@
     "wordList": "NGSL_1_2",
     "sourceRank": 1847,
     "quizMeaning": "ダイエット",
-    "quizSource": "NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "動詞",
+    "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
+    "quizPartOfSpeech": "名詞",
     "estimatedCefrLevel": "A2",
     "eikenClassificationBasis": "cefrj_foundation_split"
   },
@@ -37683,8 +37683,8 @@
     "wordList": "NGSL_1_2",
     "sourceRank": 1981,
     "quizMeaning": "知的な",
-    "quizSource": "NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "名詞",
+    "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
+    "quizPartOfSpeech": "形容詞",
     "estimatedCefrLevel": "B2",
     "eikenClassificationBasis": "cefrj"
   },
@@ -40704,8 +40704,8 @@
     "wordList": "NGSL_1_2",
     "sourceRank": 2140,
     "quizMeaning": "怒り, 憤り",
-    "quizSource": "NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "動詞",
+    "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
+    "quizPartOfSpeech": "名詞",
     "estimatedCefrLevel": "B1",
     "eikenClassificationBasis": "cefrj"
   },
@@ -45644,8 +45644,8 @@
     "wordList": "NGSL_1_2",
     "sourceRank": 2400,
     "quizMeaning": "ストローク",
-    "quizSource": "NGSL 1.2 Japanese Learning Dictionary",
-    "quizPartOfSpeech": "動詞",
+    "quizSource": "manual review / NGSL 1.2 Japanese Learning Dictionary",
+    "quizPartOfSpeech": "名詞",
     "estimatedCefrLevel": "B2",
     "eikenClassificationBasis": "cefrj"
   },

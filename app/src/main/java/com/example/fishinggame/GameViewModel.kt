@@ -644,11 +644,27 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         selectedEikenLevel: EikenLevel?,
         studyMode: StudyMode
     ) {
-        if (words.isEmpty()) return
+        val playableWords = filterWordsForQuestionMode(
+            words = words,
+            mode = state.questionMode,
+            sentenceWordIds = state.sentenceQuestionsByWordId.keys
+        )
+        if (playableWords.isEmpty()) {
+            _uiState.value = state.copy(
+                learningHistoryError = if (
+                    state.questionMode.requiresSentenceQuestion()
+                ) {
+                    "選択中の範囲に登録済みの文章問題がありません"
+                } else {
+                    state.learningHistoryError
+                }
+            )
+            return
+        }
         val pointId = state.selectedPointId ?: return
 
         _uiState.value = prepareCurrentQuestion(state.copy(
-            words = words,
+            words = playableWords,
             selectedLevel = selectedLevel,
             selectedSchoolGrade = selectedSchoolGrade,
             selectedEikenLevel = selectedEikenLevel,
@@ -656,7 +672,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             remainingStudyItemIds = if (studyMode == StudyMode.NORMAL) {
                 emptySet()
             } else {
-                words.mapTo(mutableSetOf()) { it.learningItemId() }
+                playableWords.mapTo(mutableSetOf()) { it.learningItemId() }
             },
             currentQuestionIndex = 0,
             typedAnswer = "",
@@ -690,7 +706,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             skippedQuestionCount = 0,
             escapedFishCount = 0,
             lineTension = 0,
-            appliedTimeTensionSteps = 0
+            appliedTimeTensionSteps = 0,
+            learningHistoryError = null
         ))
     }
 
@@ -984,6 +1001,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
             } else {
                 if (state.isStudySessionFinished) {
+                    val finishedAtEpochMillis =
+                        learningTimeProvider.nowEpochMillis()
                     _uiState.value = state.copy(
                         typedAnswer = "",
                         rotations = emptyList(),
@@ -992,6 +1011,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         correctAnswerCount = state.correctAnswerCount + 1,
                         phase = GamePhase.RESULT,
                         gameResult = GameResult.STUDY_COMPLETE,
+                        battleFinishedAtEpochMillis =
+                            finishedAtEpochMillis,
                         consecutiveCorrectAnswerCount = newStreak,
                         bestConsecutiveCorrectAnswerCount = maxOf(
                             state.bestConsecutiveCorrectAnswerCount,
@@ -1064,19 +1085,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             )
         }
 
-        if (state.isStudySessionFinished) {
-            _uiState.value = state.copy(
-                typedAnswer = "",
-                rotations = emptyList(),
-                isCorrect = null,
-                phase = GamePhase.RESULT,
-                gameResult = GameResult.STUDY_COMPLETE,
-                skippedQuestionCount = state.skippedQuestionCount + 1,
-                consecutiveCorrectAnswerCount = 0
-            )
-            return
-        }
-
         val tensionAfterSkip = increaseLineTension(
             state.lineTension,
             SKIP_QUESTION_TENSION
@@ -1089,6 +1097,22 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     consecutiveCorrectAnswerCount = 0
                 ),
                 recordCurrentQuestion = false
+            )
+            return
+        }
+
+        if (state.isStudySessionFinished) {
+            _uiState.value = state.copy(
+                typedAnswer = "",
+                rotations = emptyList(),
+                isCorrect = null,
+                phase = GamePhase.RESULT,
+                gameResult = GameResult.STUDY_COMPLETE,
+                battleFinishedAtEpochMillis =
+                    learningTimeProvider.nowEpochMillis(),
+                skippedQuestionCount = state.skippedQuestionCount + 1,
+                consecutiveCorrectAnswerCount = 0,
+                lineTension = tensionAfterSkip
             )
             return
         }

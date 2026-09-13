@@ -1,5 +1,6 @@
 package com.example.fishinggame
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -261,6 +262,41 @@ class GameUiStateTest {
                 remainingStudyItemIds = emptySet()
             ).isStudySessionFinished
         )
+    }
+
+    @Test
+    fun sentenceReviewCountExcludesWordsWithoutSentenceQuestions() {
+        val withSentence = word.copy(ngslRank = 1, sourceRank = 1)
+        val withoutSentence = word.copy(
+            english = "without",
+            ngslRank = 2,
+            sourceRank = 2
+        )
+        val reviewIds = setOf(
+            withSentence.learningItemId(),
+            withoutSentence.learningItemId()
+        )
+        val state = GameUiState(
+            allWords = listOf(withSentence, withoutSentence),
+            sentenceQuestionsByWordId = mapOf(
+                withSentence.wordId to SentenceQuestion(
+                    questionId = "with-sentence",
+                    wordId = withSentence.wordId,
+                    sentence = "We ___ home.",
+                    japaneseSentence = "私たちは家へ行きます。",
+                    answer = withSentence.english,
+                    distractorWordIds = emptyList(),
+                    explanation = "テスト。",
+                    source = PROJECT_AUTHORED_QUESTION_SOURCE,
+                    license = PROJECT_ORIGINAL_QUESTION_LICENSE,
+                    sourceUrl = null
+                )
+            ),
+            questionMode = QuestionMode.SENTENCE_INPUT,
+            reviewLearningItemIds = reviewIds
+        )
+
+        assertEquals(1, state.availableReviewWordCount)
     }
 
     @Test

@@ -10,6 +10,20 @@ enum class QuestionMode(val displayName: String) {
     MIXED("ミックス")
 }
 
+fun QuestionMode.requiresSentenceQuestion(): Boolean =
+    this == QuestionMode.SENTENCE_INPUT ||
+        this == QuestionMode.SENTENCE_MULTIPLE_CHOICE
+
+fun filterWordsForQuestionMode(
+    words: List<Word>,
+    mode: QuestionMode,
+    sentenceWordIds: Set<String>
+): List<Word> = if (mode.requiresSentenceQuestion()) {
+    words.filter { it.wordId in sentenceWordIds }
+} else {
+    words
+}
+
 enum class QuestionPresentation(
     val questionFormat: QuestionFormat,
     val usesSentence: Boolean
